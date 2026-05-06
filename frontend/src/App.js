@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import ErrorBoundary from "./components/common/ErrorBoundary";
+import Footer from "./components/common/Footer";
 import Home from "./components/Home";
 import BookList from "./components/books/Booklist";
 import AddBook from "./components/books/Addbook";
@@ -30,6 +31,8 @@ function App() {
   return (
     <BrowserRouter>
       <ErrorBoundary>
+      <div className="app-shell">
+      <main className="app-main">
       <Routes>
 
         {/* Routes that only logged in normal user can access */}
@@ -67,6 +70,9 @@ function App() {
           <Route path="/orders/:id" element={<Order_Details/>} exact/>
         </Route>
       </Routes>
+      </main>
+      <Footer />
+      </div>
       </ErrorBoundary>
     </BrowserRouter>
   );

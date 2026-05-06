@@ -64,14 +64,24 @@ class BookController {
   static async updateBook(req, res) {
     try {
       const id = req.params.id;
-      const book = await BookService.updateBook(id, req.body);
-      if (!book) {
-        return res.status(500).json({ message: "Not able to update book" });
+
+      // Strict ownership check: only the donator can edit. Admins do NOT
+      // get a bypass — books are owned by their donator.
+      const existing = await BookService.findBookById(id);
+      if (!existing) return res.status(404).json({ message: "Book not found" });
+
+      const callerId = req.user?._id?.toString();
+      const ownerId = existing.donatedById?.toString();
+      if (callerId !== ownerId) {
+        return res.status(403).json({ message: "You can only edit books you donated" });
       }
 
+      const book = await BookService.updateBook(id, req.body);
+      if (!book) return res.status(500).json({ message: "Not able to update book" });
       return res.status(201).json({ message: "Edited successfully" });
     } catch (error) {
-      console.log(error);
+      console.error("updateBook - error", error);
+      return res.status(500).json({ message: "Failed to update book" });
     }
   }
 

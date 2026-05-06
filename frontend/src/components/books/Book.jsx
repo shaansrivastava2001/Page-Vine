@@ -229,70 +229,48 @@ const Book = (props) => {
           </OverlayTrigger>
         </td>
 
-        {JSON.parse(Cookies.get('userToken')).role === "Admin" ? (
-          <td>
-            <OverlayTrigger
-              placement="left"
-              delay={{ show: 150, hide: 10 }}
-              overlay={deleteTooltip}
-            >
-              <button
-                className="btn btnAction mx-2"
-                id={props.book._id}
-                onClick={handleShow}
-              >
-                <i className="fa-solid fa-trash"></i>
-              </button>
-            </OverlayTrigger>
-            <OverlayTrigger
-              placement="left"
-              delay={{ show: 150, hide: 10 }}
-              overlay={editTooltip}
-            >
-              <button
-                className="btn btnAction mx-2"
-                onClick={() => {
-                  editBook(props.book);
-                }}
-              >
-                <i className="fa-solid fa-pen-to-square"></i>
-              </button>
-            </OverlayTrigger>
-            <OverlayTrigger
-              placement="left"
-              delay={{ show: 150, hide: 10 }}
-              overlay={cartTooltip}
-            >
-              <button
-                className="btn btnAction mx-2"
-                onClick={() => {
-                  addToCart(props.book);
-                }}
-                disabled={disabled}
-              >
-                <i className="fa-solid fa-cart-shopping"></i>
-              </button>
-            </OverlayTrigger>
-          </td>
-        ) : (
-          <td>
-            <OverlayTrigger
-              placement="left"
-              delay={{ show: 150, hide: 10 }}
-              overlay={cartTooltip}
-            >
-              <button
-                className="btn btnAction mx-2"
-                onClick={() => {
-                  addToCart(props.book);
-                }}
-                disabled={disabled}
-              >
-                <i className="fa-solid fa-cart-shopping"></i>
-              </button>
-            </OverlayTrigger>
-          </td>
-        )}
+        {(() => {
+          const me = JSON.parse(Cookies.get('userToken'));
+          const isAdmin = ["Admin", "Super Admin"].includes(me?.role);
+          const isOwner = String(props.book.donatedById) === String(me?._id);
+          return (
+            <td>
+              <div className="row-actions">
+                <OverlayTrigger placement="top" delay={{ show: 150, hide: 10 }} overlay={deleteTooltip}>
+                  <button
+                    className="row-action row-action--danger"
+                    id={props.book._id}
+                    onClick={handleShow}
+                    disabled={!isAdmin}
+                    aria-label="Delete book"
+                  >
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                </OverlayTrigger>
+                <OverlayTrigger placement="top" delay={{ show: 150, hide: 10 }} overlay={editTooltip}>
+                  <button
+                    className="row-action row-action--brand"
+                    onClick={() => editBook(props.book)}
+                    disabled={!isOwner}
+                    aria-label="Edit book"
+                  >
+                    <i className="fa-solid fa-pen-to-square"></i>
+                  </button>
+                </OverlayTrigger>
+                <OverlayTrigger placement="top" delay={{ show: 150, hide: 10 }} overlay={cartTooltip}>
+                  <button
+                    className="row-action row-action--brand"
+                    onClick={() => addToCart(props.book)}
+                    disabled={disabled}
+                    aria-label="Add to cart"
+                  >
+                    <i className="fa-solid fa-cart-shopping"></i>
+                  </button>
+                </OverlayTrigger>
+              </div>
+            </td>
+          );
+        })()}
       </tr>
     <Modal show={show} onHide={handleClose} className="checkoutConfirmBox">
         <Modal.Header closeButton className="closeButton">

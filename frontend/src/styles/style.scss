@@ -13,7 +13,6 @@ body {
   line-height: $line-height-base;
   color: $color-text;
   background: $color-bg;
-  padding-bottom: 56px; // leave room for the fixed footer
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -911,6 +910,55 @@ select,
 }
 
 // =============================================================================
+// Row action buttons — small icon chips, color-coded by action
+// =============================================================================
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+}
+
+.row-action {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-sm;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
+
+  &:disabled,
+  &[disabled] {
+    color: $color-text-subtle;
+    background: transparent;
+    border-color: transparent;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &--brand {
+    color: $color-primary;
+    &:hover:not(:disabled):not([disabled]) {
+      background: $brand-50;
+      border-color: rgba($brand-500, 0.2);
+    }
+  }
+
+  &--danger {
+    color: $danger-500;
+    &:hover:not(:disabled):not([disabled]) {
+      background: $danger-100;
+      border-color: rgba($danger-500, 0.2);
+    }
+  }
+}
+
+// =============================================================================
 // Status badges (minimal: dot + label, lowercase letterforms, soft tints)
 // =============================================================================
 .statusAvailable,
@@ -1526,19 +1574,40 @@ table div { margin: auto; }
 .btn[disabled] { cursor: not-allowed !important; }
 
 // =============================================================================
+// App shell — flex column so footer pins to the bottom of the viewport on
+// short pages and falls below content on long ones.
+// =============================================================================
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+// `flex: 1` lets app-main grow inside the shell so the footer pins to the
+// bottom on short pages. Don't make it a flex container itself — that breaks
+// horizontal centering for children using `margin: 0 auto`.
+.app-main { flex: 1; }
+
+// =============================================================================
 // Footer
 // =============================================================================
-footer {
-  padding: $space-3 $space-4;
+.app-footer {
+  padding: $space-4 $space-6;
   background: $color-surface;
   border-top: 1px solid $color-border;
-  color: $color-text-subtle;
-  text-align: center;
+  color: $color-text-muted;
   font-size: $font-size-xs;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  z-index: $z-sticky;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  &__copy {
+    color: $color-text-subtle;
+  }
+
+  @media (max-width: 600px) {
+    padding: $space-3 $space-4;
+  }
 }
 
 // =============================================================================

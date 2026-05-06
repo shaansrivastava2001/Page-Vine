@@ -1,123 +1,133 @@
-import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState, React } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
+import "../../styles/style.scss";
 import CartService from "../../services/cart.service";
-import BookService from '../../services/book.service';
+import BookService from "../../services/book.service";
 
 import Header from "../common/Header";
 
 import Cookies from "js-cookie";
 
-/**
- * Function to return Book details component
- * @returns {React.Component} Details of book
- */
+const InfoRow = ({ label, value }) => (
+  <div className="info-row">
+    <span className="info-row__label">{label}</span>
+    <span className="info-row__value">{value ?? "—"}</span>
+  </div>
+);
+
 const BookDetails = () => {
   const [book, setBook] = useState();
-
-  // State variable for setting cart button disable and enable
   const [disabled, setDisabled] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
+  const id = location.state?.bookId;
+
+  const me = Cookies.get("userToken") ? JSON.parse(Cookies.get("userToken")) : null;
+  const isOwner = book && me && String(book.donatedById) === String(me._id);
+  // Strict ownership: only the donator can edit, no admin override.
+  const canEdit = isOwner;
 
   useEffect(() => {
     compareBook();
-    
-    (async()=>{
+    (async () => {
       const data = await BookService.getBookData(id);
       setBook(data.data.book);
     })();
   }, []);
-  
-  // Getting the id from url parameters
-  const id = location.state.bookId;
-  
-  /**
-   *
-   * @param {Object} book Book to be edited
-   */
-  const editBook = (book) => {
-    navigate(`/books/${book._id}`, {
+
+  const editBook = (b) => {
+    navigate(`/books/${b._id}`, {
       state: {
-        name: book.title,
-        author: book.author,
-        description: book.description,
-        price: book.price,
-        quantity: book.quantity,
-        sale_price: book.sale_price
+        name: b.title,
+        author: b.author,
+        description: b.description,
+        price: b.price,
+        quantity: b.quantity,
+        sale_price: b.sale_price,
       },
     });
   };
-  
-  /**
-   * Function that makes API call to add an item to cart
-   * @param {Object} book
-   */
-  const addToCart = async (book) => {
-    if (compareBook()) {
-      CartService.addToCart(book);
+
+  const addToCart = async (b) => {
+    if (await compareBook()) {
+      CartService.addToCart(b);
       setDisabled(false);
     } else {
       setDisabled(true);
     }
   };
 
-  /**
-   * Check if item can be added to cart
-   * @returns {Boolean} whether book quantity is greater than the book in cart
-   */
   const compareBook = async () => {
-    const result = await BookService.compareBook(
-      JSON.parse(Cookies.get('userToken'))._id,
-      book?._id
-      );
-      if (result) {
-        setDisabled(false);
-      } else {
-        setDisabled(true);
-      }
-      
-      return result;
-    };    
+    const result = await BookService.compareBook(me?._id, book?._id);
+    setDisabled(!result);
+    return result;
+  };
+
+  const isAvailable = book?.status === "available" || book?.quantity > 0;
 
   return (
     <>
-      <Header></Header>
-      <div className="container mt-4 detailsContainer p-4">
-        <h3 className="text-center">Book Details</h3>
-        <div className="details">
-          <h5>
-            <span>Title</span>: {book?.title}
-          </h5>
-          <h5>
-            <span>Author</span>: {book?.author}
-          </h5>
-          <h5 className="my-3 lh-base">
-            <span>Description</span>: {book?.description}
-          </h5>
-          <h5>
-            <span>Status</span>: {book?.status}
-          </h5>
-          <h5>
-            <span>Price</span>: {book?.price}
-          </h5>
-          <div className="btnGroup" style={{display:"flex",justifyContent:"center"}}>
-            {Cookies.get('userToken') ? (
-              JSON.parse(Cookies.get('userToken')).role === "Admin" ? (
-                <button className="btn p-2 mx-2" onClick={() => {editBook(book)}} >
-                  Edit Details
-                </button>
-              ) : null
-            ) : null}
-            <button className="btn p-2 mx-2" onClick={() => {addToCart(book)}} disabled={disabled}>
-              Add to Cart
-            </button>
-            <button className="btn p-2 mx-2" onClick={() => {navigate(-1)}}>
-              Go Back
-            </button>
+      <Header />
+      <div className="page-narrow">
+        <div className="page-header">
+          <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
+            <i className="fa-solid fa-arrow-left"></i>
+          </button>
+          <div className="page-header__text">
+            <h2 className="page-title">{book?.title || "Book details"}</h2>
+            <p className="page-subtitle">
+              {book?.author ? `by ${book.author}` : "Title information"}
+            </p>
           </div>
         </div>
+
+        <section className="form-card profile-card">
+          <h3 className="section-title">Details</h3>
+          <div className="profile-info">
+            <InfoRow label="Title" value={book?.title} />
+            <InfoRow label="Author" value={book?.author} />
+            <InfoRow
+              label="Status"
+              value={
+                book ? (
+                  <span className={isAvailable ? "statusAvailable" : "statusSold"}>
+                    {book.status || (book.quantity > 0 ? "available" : "sold")}
+                  </span>
+                ) : "—"
+              }
+            />
+            <InfoRow label="Price" value={book?.price != null ? `Rs. ${book.price}` : "—"} />
+            {book?.sale_price != null && (
+              <InfoRow label="Sale price" value={`Rs. ${book.sale_price}`} />
+            )}
+            {book?.quantity != null && (
+              <InfoRow label="Quantity" value={book.quantity} />
+            )}
+            <InfoRow label="Description" value={book?.description} />
+          </div>
+
+          <div className="form-actions">
+            <button type="button" className="btn-link" onClick={() => navigate(-1)}>
+              Go back
+            </button>
+            {canEdit && (
+              <button type="button" className="btn-link" onClick={() => editBook(book)}>
+                Edit details
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => addToCart(book)}
+              disabled={disabled || !book}
+            >
+              <i className="fa-solid fa-cart-shopping" style={{ marginRight: 6 }}></i>
+              Add to cart
+            </button>
+          </div>
+        </section>
       </div>
     </>
   );

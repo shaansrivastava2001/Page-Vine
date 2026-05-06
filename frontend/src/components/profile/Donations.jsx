@@ -1,40 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import Cookies from "js-cookie";
 
-import UserService from '../../services/user.service';
+import "../../styles/style.scss";
+import UserService from "../../services/user.service";
 
-import Donation from './Donation';
-import Header from '../common/Header';
+import Donation from "./Donation";
+import Header from "../common/Header";
 
 const Donations = () => {
-    const [donations, setDonations] = useState();
-    
-    const navigate = useNavigate();
-    const location = useLocation();
+  const [donations, setDonations] = useState();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    useEffect(() => {
-        (async ()=>{
-            const response = await getDonations(location.state.userId);
-            setDonations(response.data.donations);
-          })();
-    }, []);
+  // Default to the current user if no userId was passed in router state.
+  const me = Cookies.get("userToken") ? JSON.parse(Cookies.get("userToken")) : null;
+  const targetUserId = location.state?.userId || me?._id;
 
-    const getDonations = async (id) => {
-        const response = await UserService.fetchDonations(id);
-        return response;
-    };
-    
-  
-    return (
+  useEffect(() => {
+    if (!targetUserId) return;
+    (async () => {
+      try {
+        const response = await UserService.fetchDonations(targetUserId);
+        setDonations(response.data.donations || []);
+      } catch (err) {
+        console.error(err);
+        setDonations([]);
+      }
+    })();
+  }, [targetUserId]);
+
+  const isLoading = donations === undefined;
+  const isMine = !location.state?.userId || location.state.userId === me?._id;
+
+  return (
     <>
-    <Header></Header>
+      <Header />
       <div className="container bookList">
-        <div className="btn-group mt-2">
-          <button className="back-btn" onClick={() => navigate(-1)}>
-          <i class="fa-solid fa-arrow-left"></i>
+        <div className="page-header">
+          <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
+            <i className="fa-solid fa-arrow-left"></i>
           </button>
-        <h3 className="my-3">Your Donations</h3>
+          <div className="page-header__text">
+            <h2 className="page-title">{isMine ? "My donations" : "Donations"}</h2>
+            <p className="page-subtitle">
+              {isMine
+                ? "Books you've shared with the community."
+                : "Books donated to the library."}
+            </p>
+          </div>
         </div>
+
         <div className="booksTable">
           <table>
             <thead>
@@ -42,70 +58,36 @@ const Donations = () => {
                 <th scope="col">Title</th>
                 <th scope="col">Author</th>
                 <th scope="col">Price</th>
-                <th scope="col">Created At</th>
+                <th scope="col">Created at</th>
               </tr>
             </thead>
             <tbody>
-            {
-            donations && donations.map((item)=>{
-                return (
-                    <Donation donation={item}/>
-                )
-            })
-        }
+              {isLoading ? (
+                <tr>
+                  <td colSpan="4" className="text-center" style={{ padding: 32, color: "#6b7384" }}>Loading donations…</td>
+                </tr>
+              ) : donations.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="text-center" style={{ padding: "48px 16px" }}>
+                    <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 4, color: "#20242f" }}>
+                      {isMine ? "You haven't donated any books yet" : "No donations yet"}
+                    </div>
+                    <div style={{ fontSize: 13, color: "#6b7384" }}>
+                      {isMine
+                        ? "Share a book with the community to see it here."
+                        : "Donations from this user will appear here."}
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                donations.map((item) => <Donation donation={item} key={item._id} />)
+              )}
             </tbody>
           </table>
         </div>
-        {/* <div className="pagination">
-          <div className="left-pagination">
-            <span htmlFor="rowsPerPage">Rows per page:</span>
-            <select
-              className="form-select"
-              onChange={(e) => handlePageSize(e)}
-              id="rowsPerPage"
-              style={{ display: "inline" }}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-            </select>
-          </div>
-          <div className="right-pagination">
-            <button
-              className="btn btnPaginationControls previous"
-              onClick={() => handlePrevious()}
-            >
-              {" "}
-              Previous{" "}
-            </button>
-            <ul className="">
-              {pageNumbers.map((number) => {
-                let btnClass = " btn btnPaginationInactive mx-1";
-                if (number === page) btnClass = "btn btnPaginationActive mx-1";
-                return (
-                  <button
-                    className={btnClass}
-                    onClick={() => paginate(number)}
-                    key={number}
-                  >
-                    {number}
-                  </button>
-                );
-              })}
-            </ul>
-            <button
-              className="btn btnPaginationControls float-right"
-              onClick={() => handleNext()}
-            >
-              {" "}
-              Next{" "}
-            </button>
-          </div>
-        </div> */}
       </div>
-
     </>
-  )
-}
+  );
+};
 
 export default Donations;

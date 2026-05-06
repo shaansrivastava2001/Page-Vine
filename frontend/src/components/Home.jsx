@@ -51,6 +51,7 @@ const Home = () => {
     totalOrders: null,
     totalUsers: null,
     pendingRequestsCount: null,
+    myDonationsCount: null,
   });
   const [loading, setLoading] = useState(true);
 
@@ -61,9 +62,11 @@ const Home = () => {
         BookService.getStats(),
         OrderService.getStats(),
         UserService.getStats(),
+        me?._id ? UserService.getDonations(me._id) : Promise.resolve(null),
       ]);
       if (!alive) return;
-      const [books, orders, users] = results;
+      const [books, orders, users, mine] = results;
+      const mineList = mine.status === "fulfilled" ? mine.value?.data?.donations : null;
       setStats({
         availableCount:        books.status === "fulfilled" ? books.value.data.availableCount       : null,
         totalCount:            books.status === "fulfilled" ? books.value.data.totalCount           : null,
@@ -71,6 +74,7 @@ const Home = () => {
         pendingRequestsCount:  books.status === "fulfilled" ? books.value.data.pendingRequestsCount : null,
         totalOrders:           orders.status === "fulfilled" ? orders.value.data.totalOrders         : null,
         totalUsers:            users.status === "fulfilled" ? users.value.data.totalUsers           : null,
+        myDonationsCount:      Array.isArray(mineList) ? mineList.length : (Number(mineList) || null),
       });
       setLoading(false);
     })();
@@ -92,6 +96,19 @@ const Home = () => {
             <h2 className="page-title">Welcome back{firstName ? `, ${firstName}` : ""}.</h2>
             <p className="page-subtitle">{today} · A snapshot of the library at a glance.</p>
           </div>
+        </div>
+
+        <h3 className="section-title">Your activity</h3>
+        <div className="stat-grid">
+          <StatCard
+            tone="brand"
+            icon="fa-hand-holding-heart"
+            label="My donations"
+            value={formatNumber(stats.myDonationsCount)}
+            hint="Books you've shared with the community"
+            loading={loading}
+            to={me?.username ? `/users/donations/${me.username}` : null}
+          />
         </div>
 
         <h3 className="section-title">Library</h3>

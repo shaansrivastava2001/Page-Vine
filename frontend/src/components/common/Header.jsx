@@ -114,6 +114,13 @@ const Header = forwardRef((props,ref) => {
               : null
             }
             <Dropdown.Item className='dropdownItem' onClick={()=>{getDetails(JSON.parse(Cookies.get('userToken'))._id)}}><i className="fa-solid fa-user"></i>&nbsp;&nbsp;Profile</Dropdown.Item>
+            <Dropdown.Item
+              className='dropdownItem'
+              onClick={() => {
+                const u = JSON.parse(Cookies.get('userToken'));
+                navigate(`/users/donations/${u.username}`, { state: { userId: u._id } });
+              }}
+            ><i className="fa-solid fa-hand-holding-heart"></i>&nbsp;&nbsp;My donations</Dropdown.Item>
             <Dropdown.Item href="/books" className='dropdownItem'><i className="fa-solid fa-book"></i>&nbsp;&nbsp;Books</Dropdown.Item>
             <Dropdown.Item href="/books/cart" className='dropdownItem'><i className="fa-solid fa-cart-shopping"></i>&nbsp;&nbsp;Cart</Dropdown.Item>
             <Dropdown.Item className='dropdownItem' onClick={logout}><i className="fa-solid fa-right-from-bracket"></i>&nbsp;&nbsp;Logout</Dropdown.Item>
