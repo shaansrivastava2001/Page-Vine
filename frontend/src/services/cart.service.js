@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 const cartServiceUrl = `${process.env.REACT_APP_CART_MS_URL}/cart`;
 const userServiceUrl = `${process.env.REACT_APP_USER_MS_URL}/users`;
 const bookServiceUrl = `${process.env.REACT_APP_BOOK_MS_URL}/books`;
+const orderServiceUrl = `${process.env.REACT_APP_ORDER_MS_URL}/orders`;
 
 /**
  * Utility class for handling Cart Services
@@ -221,20 +222,20 @@ class CartService{
    * @param {Integer} total_price 
    */
   async addOrder (total_price) {
-    const res = await axios
-      .post(`${userServiceUrl}/orders/addOrder`, {
-        name: JSON.parse(Cookies.get('userToken')).name,
-        userId: JSON.parse(Cookies.get('userToken'))._id,
-        email: JSON.parse(Cookies.get('userToken')).email,
-        total_price: total_price,
-        token: Cookies.get('token')
-      })
+    const user = JSON.parse(Cookies.get('userToken'));
+    const res = await axios.post(`${orderServiceUrl}/addOrder`, {
+      name: user.name,
+      userId: user._id,
+      email: user.email,
+      total_price: total_price,
+      token: Cookies.get('token'),
+    });
 
-      if(res){
-        console.log("Order added to backend");
-      } else {
-        console.log("Order adding failed");
-      }
+    if (res) {
+      console.log("Order added to backend");
+    } else {
+      console.log("Order adding failed");
+    }
   }
 
 };

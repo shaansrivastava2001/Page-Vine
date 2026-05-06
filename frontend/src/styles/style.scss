@@ -56,84 +56,119 @@ a {
 }
 
 .heading {
-  font-size: $font-size-2xl;
+  font-size: $font-size-xl;
   font-weight: $font-weight-semibold;
   color: $color-text;
+  letter-spacing: -0.01em;
   margin: 0;
 }
 
 // =============================================================================
 // Navbar
 // =============================================================================
+// Cohesive theme: clearly-purple navbar that's two shades darker than the
+// brand-500 buttons. Both read as the same brand family — chrome vs action.
+//   nav    = $brand-700 (#463a85) — deep, sophisticated, unmistakably purple
+//   buttons = $brand-500 (#7160c2) — brighter purple for primary actions
+$navbar-bg: $brand-700;
+
 .navbar {
-  background: linear-gradient(135deg, $brand-700 0%, $brand-600 100%);
-  padding: $space-3 $space-6;
-  box-shadow: $shadow-md;
-  border-bottom: 1px solid rgba($black, 0.08);
+  background: $navbar-bg;
+  padding: 0 $space-8;
+  height: 58px;          // Locked, not min-height — prevents growth from
+  min-height: 58px;       // Bootstrap dropdown / focus states inside.
+  border-bottom: 1px solid rgba($white, 0.08);
+  box-shadow: none;
   z-index: $z-sticky;
+  align-items: center;
+
+  // Bootstrap injects internal padding — kill it so we control density.
+  .container-fluid { padding: 0; gap: $space-4; align-items: center; }
+  .navbar-nav { gap: 0; align-items: center; }
+
+  // Lock the dropdown wrapper to the navbar height — without this, react-
+  // bootstrap's .dropdown div and the .show class can leak vertical space.
+  .dropdown {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .dropdown-menu { position: absolute !important; }
 
   .navbar-brand {
     color: $white;
-    font-size: $font-size-xl;
-    font-weight: $font-weight-bold;
-    letter-spacing: 0.01em;
-    padding: $space-2 $space-3;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    letter-spacing: -0.005em;
+    padding: 0 $space-3 0 0;
+    margin: 0;
     transition: opacity $transition-fast;
     &:hover, &:focus { color: $white; opacity: 0.9; }
   }
 
   .nav-link {
-    color: rgba($white, 0.85);
+    color: rgba($white, 0.65);
     font-weight: $font-weight-medium;
     font-size: $font-size-sm;
-    padding: $space-2 $space-4;
-    border-radius: $radius-md;
-    transition: background $transition-fast, color $transition-fast;
-    &:hover, &:focus { background: rgba($white, 0.12); color: $white; }
+    padding: 6px $space-3;
+    margin: 0 2px;
+    border-radius: $radius-sm;
+    transition: color $transition-fast, background $transition-fast;
+    &:hover, &:focus { background: rgba($white, 0.08); color: $white; }
   }
 
   .navbar-toggler {
-    border: 1px solid rgba($white, 0.3);
-    padding: $space-1 $space-2;
+    border: 1px solid rgba($white, 0.2);
+    padding: 4px $space-3;
     border-radius: $radius-sm;
+    color: $white;
+    box-shadow: none;
   }
 }
 
 #cartIcon {
   position: relative;
-  background: rgba($white, 0.12);
+  background: transparent;
   border: 0;
-  color: $white;
-  width: 40px;
-  height: 40px;
-  border-radius: $radius-pill;
+  color: rgba($white, 0.82);
+  width: 34px;
+  height: 34px;
+  border-radius: $radius-sm;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-right: $space-3;
+  margin: 0;
   cursor: pointer;
-  transition: background $transition-fast;
+  transition: background $transition-fast, color $transition-fast;
 
-  &:hover { background: rgba($white, 0.2); }
+  &:hover { background: rgba($white, 0.08); color: $white; }
 
-  .cart-icon { font-size: $font-size-base; position: static; display: inline; }
+  .cart-icon { font-size: 14px; position: static; display: inline; line-height: 1; }
 
+  .cart-count:empty,
+  .cart-count[data-empty="true"] { display: none; }
+
+  // Compact notification chip — brighter brand purple stands out against the
+  // deep brand-900 navbar; thin ring matches the bg so it reads as separate.
   .cart-count {
     position: absolute;
-    top: -4px;
-    right: -4px;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    background: $danger-500;
+    top: 2px;
+    right: 2px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 4px;
+    background: $brand-400;
     color: $white;
     border-radius: $radius-pill;
-    font-size: $font-size-xs;
+    font-size: 9px;
     font-weight: $font-weight-bold;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
+    box-shadow: 0 0 0 1.5px $navbar-bg;
   }
 }
 
@@ -141,21 +176,23 @@ a {
 .navDropdown:hover,
 .navDropdown:focus,
 .navDropdown:active {
-  background: rgba($white, 0.12) !important;
+  background: transparent !important;
   border: 0 !important;
-  color: $white !important;
-  width: 40px;
-  height: 40px;
-  border-radius: $radius-pill !important;
+  color: rgba($white, 0.82) !important;
+  width: 34px;
+  height: 34px;
+  border-radius: $radius-sm !important;
   padding: 0 !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-right: $space-4;
+  margin: 0 !important;
   box-shadow: none !important;
+  transition: background $transition-fast, color $transition-fast;
+  font-size: 14px;
   &::after { display: none; }
 }
-.navDropdown:hover { background: rgba($white, 0.2) !important; }
+.navDropdown:hover { background: rgba($white, 0.08) !important; color: $white !important; }
 
 .dropdownMenu {
   border: 1px solid $color-border;
@@ -335,27 +372,619 @@ select,
 }
 
 // =============================================================================
-// Status badges
+// Page layout helpers — minimal pages (forms, settings, etc.)
+// =============================================================================
+.page-narrow {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: $space-4 $space-4;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  margin-bottom: $space-3;
+
+  &__text { display: flex; flex-direction: column; gap: 2px; }
+}
+
+.page-title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  letter-spacing: -0.01em;
+  color: $color-text;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  margin: 0;
+}
+
+// =============================================================================
+// Form card + fields (used by CreateUser, can be reused by other admin forms)
+// =============================================================================
+.form-card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-4 $space-5;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-3 $space-4;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &--full { grid-column: 1 / -1; }
+
+  &__label {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: $color-text-muted;
+    letter-spacing: 0.01em;
+  }
+
+  &__input {
+    width: 100%;
+    height: 34px;
+    padding: 0 $space-3;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    color: $color-text;
+    font-size: $font-size-sm;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+    font-family: inherit;
+
+    &::placeholder { color: $color-text-subtle; }
+    &:hover { border-color: $color-border-strong; }
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: $shadow-focus;
+    }
+  }
+
+  &__textarea {
+    height: auto;
+    min-height: 60px;
+    padding: $space-2 $space-3;
+    line-height: $line-height-base;
+    resize: vertical;
+  }
+
+  &__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7384' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right $space-3 center;
+    background-size: 14px;
+    padding-right: $space-8;
+    cursor: pointer;
+  }
+
+  &__hint, &__error {
+    font-size: $font-size-xs;
+    color: $color-text-subtle;
+  }
+  &__error { color: $danger-500; }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: $space-3;
+  margin-top: $space-4;
+  padding-top: $space-3;
+  border-top: 1px solid $color-border;
+}
+
+.btn-primary {
+  background: $color-primary;
+  color: $color-text-on-brand;
+  border: 1px solid $color-primary;
+  border-radius: $radius-sm;
+  padding: 0 $space-5;
+  height: 36px;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: background $transition-fast, border-color $transition-fast;
+
+  &:hover { background: $color-primary-hover; border-color: $color-primary-hover; }
+  &:disabled, &[disabled] {
+    background: $color-surface-alt;
+    color: $color-text-subtle;
+    border-color: $color-border;
+    cursor: not-allowed;
+  }
+}
+
+.btn-link {
+  background: transparent;
+  border: 0;
+  color: $color-text-muted;
+  padding: 0 $space-3;
+  height: 36px;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  border-radius: $radius-sm;
+  transition: color $transition-fast, background $transition-fast;
+
+  &:hover { color: $color-text; background: $color-surface-alt; }
+}
+
+// =============================================================================
+// Home / Dashboard
+// =============================================================================
+.home { max-width: 1080px; }
+
+.home .page-header { margin-bottom: $space-5; }
+.home .page-title  { font-size: $font-size-2xl; }
+
+.stat-grid {
+  display: grid;
+  // auto-fit so a 4- or 5-card layout (when admin) both reflow cleanly across breakpoints
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $space-3;
+  margin-bottom: $space-5;
+}
+
+.stat-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;            // stretch to the grid row height...
+
+  .stat-card { height: 100%; }   // ...and pass it down to the card inside
+
+  &:hover .stat-card {
+    border-color: $color-border-strong;
+    transform: translateY(-1px);
+    box-shadow: $shadow-sm;
+  }
+  &:hover .stat-card__arrow { opacity: 1; transform: translateX(2px); }
+}
+
+.stat-card {
+  position: relative;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  min-height: 124px;
+  transition: border-color $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: $radius-sm;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-sm;
+    background: $brand-50;
+    color: $color-primary;
+  }
+
+  &__arrow {
+    color: $color-text-subtle;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity $transition-fast, transform $transition-fast;
+  }
+
+  &__body { display: flex; flex-direction: column; gap: 2px; }
+
+  &__label {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__value {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-top: 2px;
+  }
+
+  &__hint {
+    font-size: $font-size-xs;
+    color: $color-text-subtle;
+    margin-top: $space-1;
+  }
+
+  // Per-card color tints — applied via modifier class
+  &--brand   .stat-card__icon { background: rgba($brand-500, 0.10);    color: $brand-600; }
+  &--success .stat-card__icon { background: rgba($success-500, 0.12); color: darken($success-500, 8%); }
+  &--info    .stat-card__icon { background: rgba($info-500, 0.12);    color: $info-500; }
+  &--warning .stat-card__icon { background: rgba($warning-500, 0.14); color: darken($warning-500, 6%); }
+}
+
+.skeleton-bar {
+  display: inline-block;
+  width: 72px;
+  height: 30px;
+  border-radius: $radius-sm;
+  background: linear-gradient(90deg, $color-surface-alt 25%, $color-border 50%, $color-surface-alt 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.4s infinite;
+  vertical-align: middle;
+}
+@keyframes skeletonShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// =============================================================================
+// Section header (used above blocks like "Quick actions", "Recent activity")
+// =============================================================================
+.section-title {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 $space-3;
+}
+
+// =============================================================================
+// Quick actions — proper tiles, not a flat link row
+// =============================================================================
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-3;
+
+  @media (max-width: 700px) { grid-template-columns: 1fr; }
+}
+
+.action-tile {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-4;
+  text-decoration: none;
+  color: $color-text;
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  transition: border-color $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $color-border-strong;
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+    color: $color-text;
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-sm;
+    background: $brand-50;
+    color: $color-primary;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: $font-size-base;
+  }
+
+  &__title { font-size: $font-size-sm; font-weight: $font-weight-semibold; color: $color-text; }
+  &__sub   { font-size: $font-size-xs; color: $color-text-muted; }
+
+  &--primary {
+    background: $color-primary;
+    border-color: $color-primary;
+    color: $color-text-on-brand;
+    &:hover { background: $color-primary-hover; border-color: $color-primary-hover; color: $color-text-on-brand; }
+    .action-tile__icon { background: rgba($white, 0.15); color: $white; }
+    .action-tile__title { color: $color-text-on-brand; }
+    .action-tile__sub   { color: rgba($white, 0.78); }
+  }
+}
+
+// =============================================================================
+// Empty state — reusable card-style placeholder for empty pages
+// =============================================================================
+.empty-state {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-12 $space-6;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: $radius-pill;
+    background: $brand-50;
+    color: $color-primary;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-xl;
+    margin-bottom: $space-2;
+  }
+
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    margin: 0;
+    max-width: 360px;
+    line-height: $line-height-base;
+  }
+
+  &__actions {
+    margin-top: $space-3;
+    display: flex;
+    gap: $space-3;
+    justify-content: center;
+  }
+}
+
+// =============================================================================
+// Cart total chip (in the page header)
+// =============================================================================
+.cart-total-chip {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: 6px $space-4;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: flex-end;
+
+  &__label {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    font-weight: $font-weight-medium;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__value {
+    font-size: $font-size-base;
+    color: $color-text;
+    font-weight: $font-weight-semibold;
+    letter-spacing: -0.01em;
+  }
+}
+
+// Override cart bottom layout (was margin-mess, now clean flex row)
+.cartBottom {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-3;
+  margin-top: $space-5;
+  padding-top: $space-4;
+  border-top: 1px solid $color-border;
+  align-items: center;
+}
+
+// =============================================================================
+// Profile page
+// =============================================================================
+.profile-page { max-width: 720px; }
+
+.profile-card { padding: $space-5 $space-5 $space-4; margin-bottom: $space-5; }
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid $color-border;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  padding: $space-3 0;
+  border-bottom: 1px solid $color-border;
+  font-size: $font-size-sm;
+
+  &:last-child { border-bottom: 0; }
+
+  &__label {
+    flex: 0 0 110px;
+    color: $color-text-muted;
+    font-weight: $font-weight-medium;
+  }
+
+  &__value {
+    flex: 1;
+    color: $color-text;
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__missing { color: $danger-500; font-weight: $font-weight-medium; }
+
+  &__action {
+    background: transparent;
+    border: 0;
+    color: $color-text-muted;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: $radius-sm;
+    transition: color $transition-fast, background $transition-fast;
+    &:hover { color: $color-primary; background: $brand-50; }
+  }
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-3;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.profile-stat {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__value {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+    letter-spacing: -0.01em;
+  }
+
+  &__hint {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    margin: 0;
+    line-height: $line-height-base;
+  }
+
+  &__action {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: 4px 0;
+    color: $color-primary;
+    font-weight: $font-weight-medium;
+    background: transparent;
+    &:hover { color: $color-primary-hover; background: transparent; }
+  }
+}
+
+// =============================================================================
+// Status badges (minimal: dot + label, lowercase letterforms, soft tints)
 // =============================================================================
 .statusAvailable,
 .statusSold {
   display: inline-flex;
   align-items: center;
-  padding: 2px $space-3;
-  border-radius: $radius-pill;
+  gap: $space-2;
+  padding: 2px $space-2;
+  border-radius: $radius-sm;
   font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: $font-weight-medium;
+  letter-spacing: 0;
+  text-transform: capitalize;
   white-space: nowrap;
+  border: 1px solid transparent;
+
+  &::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
 }
-.statusAvailable { background: $success-100; color: darken($success-500, 12%); }
-.statusSold      { background: $danger-100;  color: darken($danger-500, 12%); }
+.statusAvailable {
+  background: rgba($success-500, 0.08);
+  color: darken($success-500, 8%);
+  border-color: rgba($success-500, 0.18);
+  &::before { background: $success-500; }
+}
+.statusSold {
+  background: rgba($danger-500, 0.08);
+  color: darken($danger-500, 8%);
+  border-color: rgba($danger-500, 0.18);
+  &::before { background: $danger-500; }
+}
+
+// Role tag — neutral by default, brand for elevated roles
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px $space-2;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  background: $color-surface-alt;
+  color: $color-text-muted;
+  border: 1px solid $color-border;
+  text-transform: capitalize;
+  white-space: nowrap;
+
+  // Brand-tinted for Admin / Super Admin / Implementor
+  &:not(:empty)[class] {
+    // CSS-only role coloring driven by content via :has would be ideal, but :has support
+    // varies — instead we keep the default neutral and add modifier classes if needed later.
+  }
+}
 
 // =============================================================================
 // Booklist toolbar (search / filter / add)
 // =============================================================================
+
+// List pages (.bookList is reused by Users page too) lay out as a vertical
+// flex column filling the viewport — table grows naturally, but the pagination
+// row is pushed to the bottom via `margin-top: auto` so it sits at the bottom
+// of the visible area regardless of how many rows the table has.
 .bookList {
+  display: flex;
+  flex-direction: column;
+  // 100vh − navbar (40px) − fixed footer (56px) − container vertical padding (~48px)
+  min-height: calc(100vh - 144px);
+
+  > .pagination { margin-top: auto; }
+
   h3 { color: $color-text; font-weight: $font-weight-semibold; }
   label {
     margin-right: $space-3;
@@ -377,33 +1006,41 @@ select,
 }
 
 .btnAdd {
-  background: $color-primary;
-  color: $color-text-on-brand;
-  border: 1px solid $color-primary;
+  background: $color-surface;
+  color: $color-text;
+  border: 1px solid $color-border;
   border-radius: $radius-md;
-  padding: $space-3 $space-5;
+  padding: $space-2 $space-4;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   display: inline-flex;
   align-items: center;
   gap: $space-2;
-  transition: background $transition-fast, box-shadow $transition-fast, transform $transition-fast;
-  box-shadow: $shadow-sm;
+  transition: background $transition-fast, border-color $transition-fast, color $transition-fast;
+  box-shadow: none;
 
   &:hover {
-    background: $color-primary-hover;
-    border-color: $color-primary-hover;
-    color: $color-text-on-brand;
-    box-shadow: $shadow-md;
-  }
-  &:active { transform: translateY(1px); }
-  &:disabled, &[disabled] {
     background: $color-surface-alt;
+    border-color: $color-border-strong;
+    color: $color-text;
+    box-shadow: none;
+  }
+  &:active { background: $color-surface-alt; }
+  &:disabled, &[disabled] {
+    background: $color-surface;
     color: $color-text-subtle;
     border-color: $color-border;
     cursor: not-allowed;
-    box-shadow: none;
   }
+}
+
+// Primary variant: when paired with .btn-primary use brand fill
+.btnAdd.btn-primary,
+.btn-primary.btnAdd {
+  background: $color-primary;
+  color: $color-text-on-brand;
+  border-color: $color-primary;
+  &:hover { background: $color-primary-hover; border-color: $color-primary-hover; color: $color-text-on-brand; }
 }
 
 .components {
@@ -461,53 +1098,55 @@ select,
 .bookList #rowsPerPage { width: 100%; }
 
 // =============================================================================
-// Tables
+// Tables — minimal, dense
 // =============================================================================
 table {
   width: 100%;
   background: $color-surface;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: $radius-md;
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
-  margin-bottom: $space-5;
+  margin-bottom: $space-4;
   table-layout: fixed;
-  box-shadow: $shadow-sm;
+  box-shadow: none;
 }
 
 table thead {
   position: sticky;
   top: 0;
-  z-index: $z-sticky;
+  // Below dropdowns/overlays so the filter menu sits above the header
+  z-index: 1;
 }
 
 table thead th {
-  background: $color-surface-alt;
+  background: $color-surface;
   color: $color-text-muted;
-  font-weight: $font-weight-semibold;
+  font-weight: $font-weight-medium;
   font-size: $font-size-xs;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: $space-3 $space-4;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid $color-border;
 }
 
 table tbody td {
-  padding: $space-3 $space-4;
+  padding: $space-2 $space-4;
   border-bottom: 1px solid $color-border;
   color: $color-text;
   font-size: $font-size-sm;
   font-weight: $font-weight-regular;
   vertical-align: middle;
-  text-align: left;
+  text-align: center;
+  height: 44px;
 }
 
 table tbody tr {
   transition: background $transition-fast;
   &:last-child td { border-bottom: 0; }
-  &:hover { background: $brand-50; cursor: pointer; }
+  &:hover { background: $color-surface-alt; cursor: pointer; }
 }
 
 table div { margin: auto; }
@@ -517,13 +1156,13 @@ table div { margin: auto; }
   max-height: 480px;
   overflow-y: auto;
   overflow-x: hidden;
-  margin-bottom: $space-5;
-  border-radius: $radius-lg;
+  margin-bottom: $space-4;
+  border-radius: $radius-md;
   border: 1px solid $color-border;
   background: $color-surface;
-  box-shadow: $shadow-sm;
+  box-shadow: none;
 
-  table { box-shadow: none; border: 0; margin-bottom: 0; }
+  table { box-shadow: none; border: 0; margin-bottom: 0; border-radius: 0; }
 }
 
 .orderedBooksList .booksTable { max-height: none; }
@@ -549,7 +1188,7 @@ table div { margin: auto; }
 
 .pagination ul {
   display: flex;
-  gap: $space-2;
+  gap: $space-1;
   align-items: center;
   margin: 0;
   padding: 0;
@@ -560,34 +1199,40 @@ table div { margin: auto; }
   font-size: $font-size-sm;
   color: $color-text-muted;
   font-weight: $font-weight-medium;
-  margin-right: $space-3;
+  white-space: nowrap;
+  margin: 0;
 }
 
 .left-pagination,
 .left-heading {
   display: flex;
   align-items: center;
-  gap: $space-3;
+  gap: $space-2;
+  flex-shrink: 0;
 }
 
 .right-pagination,
 .right-heading {
   display: flex;
   align-items: center;
-  gap: $space-2;
+  gap: $space-1;
+  flex-wrap: nowrap;
 }
 
+// Page-number buttons: square, uniform
 .btnPaginationActive,
 .btnPaginationInactive {
-  width: 36px;
-  height: 36px;
-  border-radius: $radius-md;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: $radius-sm;
   border: 1px solid $color-border;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
+  margin: 0;
   transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
 }
 
@@ -601,22 +1246,25 @@ table div { margin: auto; }
 .btnPaginationInactive {
   background: $color-surface;
   color: $color-text;
-  &:hover { background: $brand-50; color: $color-primary; border-color: $color-primary; }
+  &:hover { background: $color-surface-alt; color: $color-text; border-color: $color-border-strong; }
 }
 
+// Prev / Next: same height as the page numbers, just wider
 .btnPaginationControls {
   background: $color-surface;
   color: $color-text;
   border: 1px solid $color-border;
-  padding: $space-2 $space-4;
-  border-radius: $radius-md;
+  padding: 0 $space-3;
+  height: 32px;
+  border-radius: $radius-sm;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
+  white-space: nowrap;
   transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
 
-  &:hover { background: $color-primary; color: $color-text-on-brand; border-color: $color-primary; }
+  &:hover { background: $color-surface-alt; color: $color-text; border-color: $color-border-strong; }
   &:disabled, &[disabled] {
-    background: $color-surface-alt;
+    background: $color-surface;
     color: $color-text-subtle;
     border-color: $color-border;
     cursor: not-allowed;

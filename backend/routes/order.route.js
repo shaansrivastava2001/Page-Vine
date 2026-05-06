@@ -7,6 +7,9 @@ const router = express.Router();
 
 // Routes for order
 
+// Dashboard stats (auth-required, no role gating)
+router.get("/orders/stats", tokenMiddleware, OrderController.getStats);
+
 // Gets list of orders of an user
 router.get("/orders/getOrder/:id", tokenMiddleware, OrderController.getUserOrders);
 

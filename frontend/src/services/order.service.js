@@ -8,6 +8,11 @@ const orderServiceUrl = `${process.env.REACT_APP_ORDER_MS_URL}/orders`;
  */
 class OrderService{
 
+  /** Dashboard stats: { totalOrders } */
+  async getStats() {
+    return axios.get(`${orderServiceUrl}/stats`, { params: { token: Cookies.get('token') } });
+  }
+
   /**
  * Get data of a book from backend
  * @param {ObjectId} id

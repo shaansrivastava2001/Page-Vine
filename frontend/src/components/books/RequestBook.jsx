@@ -1,106 +1,94 @@
-import { useState, React } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import BookService from "../../services/book.service";
+import "../../styles/style.scss";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
 
+import BookService from "../../services/book.service";
 import Header from "../common/Header";
 
 const RequestBook = () => {
-  // States for form fields
   const [bookName, setBookName] = useState("");
   const [author, setAuthor] = useState("");
-  const [disabled, setDisabled] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
 
-  /**
-   * Validating the form
-   * @param {Event} e
-   */
-  const formSubmit = (e) => {
+  const canSubmit = bookName.trim() && author.trim() && !submitting;
+
+  const submit = async (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
 
-    sendRequest(bookName, author);
-    setBookName("");
-    setAuthor("");
-  };
-
-  /**
-   * Sending post request to backend for requesting book
-   * @param {String} bookName
-   * @param {String} author
-   */
-  const sendRequest = async (bookName, author) => {
-    const res = await BookService.sendRequest(bookName, author);
-    if (res) {
-      navigate("/books");
-    } else {
-      console.log("Some error in requesting book");
+    setSubmitting(true);
+    try {
+      const res = await BookService.sendRequest(bookName, author);
+      if (res) {
+        navigate("/books");
+      } else {
+        toast.error("Could not send request. Please try again.");
+      }
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Could not send request.";
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
     }
-  };
-
-  const checkToEnable = () => {
-    if (!bookName || !author) {
-      setDisabled(true);
-    } else {
-      setDisabled(false);
-    }
-  };
-
-  const checkBookName = (e) => {
-    setBookName(e.target.value);
-    checkToEnable();
-  };
-
-  const checkAuthor = (e) => {
-    setAuthor(e.target.value);
-    checkToEnable();
   };
 
   return (
     <>
-      <Header></Header>
-      <div className="container mt-4 formContainer p-4 donationForm">
-        <div className="btn-group mt-2">
-          <button className="back-btn" onClick={() => navigate(-1)}>
-          <i className="fa-solid fa-arrow-left"></i>
+      <Header />
+      <div className="page-narrow">
+        <div className="page-header">
+          <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
+            <i className="fa-solid fa-arrow-left"></i>
           </button>
-          <h3 className="my-3">Request a Book</h3>
+          <div className="page-header__text">
+            <h2 className="page-title">Request a book</h2>
+            <p className="page-subtitle">Tell the community about a book you'd like to read.</p>
+          </div>
         </div>
-        <form onSubmit={formSubmit} autoComplete="off">
-          <div className="row">
-            <div className="col-md-6 mb-3">
-              <label htmlFor="title" className="form-label">
-                Book Name
-              </label>
+
+        <form className="form-card" onSubmit={submit} autoComplete="off" noValidate>
+          <div className="form-grid">
+            <div className="field field--full">
+              <label htmlFor="bookName" className="field__label">Book name</label>
               <input
+                id="bookName"
                 type="text"
+                className="field__input"
                 value={bookName}
-                className="form-control"
-                id="title"
-                onChange={checkBookName}
+                onChange={(e) => setBookName(e.target.value)}
+                placeholder="The book's title"
               />
             </div>
-            <div className="col-md-6 mb-3">
-              <label htmlFor="author" className="form-label">
-                Author
-              </label>
+
+            <div className="field field--full">
+              <label htmlFor="author" className="field__label">Author</label>
               <input
-                type="text"
-                value={author}
-                className="form-control"
                 id="author"
-                onChange={checkAuthor}
+                type="text"
+                className="field__input"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                placeholder="Author name"
               />
             </div>
           </div>
-          <div className="btnGroup" style={{display:"flex",justifyContent:"center"}}>
-            <button className="btn p-2 mx-2" disabled={disabled} type="submit">
-              Request Book
+
+          <div className="form-actions">
+            <button type="button" className="btn-link" onClick={() => navigate(-1)}>
+              Cancel
+            </button>
+            <button type="submit" className="btn-primary" disabled={!canSubmit}>
+              {submitting ? "Sending…" : "Send request"}
             </button>
           </div>
         </form>
       </div>
+      <ToastContainer />
     </>
   );
 };

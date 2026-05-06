@@ -8,13 +8,15 @@
 }
 
 .left-pagination .custom-select-container {
-  width: 110px;
-  margin-left: $space-2;
+  width: 80px;
+  margin-left: 0;
+  flex-shrink: 0;
 }
 
 .left-pagination .custom-select-header {
-  padding: $space-2 $space-3;
-  font-size: $font-size-xs;
+  padding: 4px $space-2;
+  font-size: $font-size-sm;
+  height: 32px;
 }
 
 .custom-select-header {
@@ -67,7 +69,8 @@
   border-radius: $radius-md;
   max-height: 300px;
   overflow-y: auto;
-  z-index: $z-dropdown;
+  // Must sit above the table's sticky thead (which uses $z-sticky)
+  z-index: $z-overlay;
   box-shadow: $shadow-lg;
   animation: customSelectSlideDown 0.16s ease;
   padding: $space-1 0;

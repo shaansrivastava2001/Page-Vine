@@ -9,7 +9,8 @@ const ProtectAdmin = () => {
     return <Navigate to="/" replace />;
   }
   const user = getUser();
-  if (user?.role !== "Admin") return <Navigate to="/books" replace />;
+  const allowed = ["Admin", "Super Admin"];
+  if (!allowed.includes(user?.role)) return <Navigate to="/books" replace />;
   return <Outlet />;
 };
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, React } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import Header from "../common/Header";
 
@@ -20,9 +20,7 @@ const Users = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  
-  const navigate = useNavigate();
-  
+
   useEffect(() => {
     getUsers(page, rowsPerPage, search);
   }, [page, rowsPerPage, search]);
@@ -84,11 +82,17 @@ const Users = () => {
     <>
       <Header></Header>
       <div className="container bookList">
-        <div className="btn-group mt-2">
-            <button className="back-btn" onClick={() => navigate(-1)}>
-            <i class="fa-solid fa-arrow-left"></i>
+        <div className="page-header" style={{ justifyContent: "space-between" }}>
+          <div className="page-header__text">
+            <h2 className="page-title">Users</h2>
+            <p className="page-subtitle">Manage accounts and assign roles.</p>
+          </div>
+          <Link to="/users/new">
+            <button className="btn-primary" type="button">
+              <i className="fa-solid fa-plus" style={{ marginRight: 6 }}></i>
+              Create user
             </button>
-          <h3 className="my-3">Users</h3>
+          </Link>
         </div>
         <div className="components">
           <input
@@ -104,7 +108,8 @@ const Users = () => {
                 <th scope="col">Name</th>
                 <th scope="col">Username</th>
                 <th scope="col">Email</th>
-                <th scope="col">Number of donations</th>
+                <th scope="col">Role</th>
+                <th scope="col">Donations</th>
               </tr>
             </thead>
             <tbody>

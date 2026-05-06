@@ -138,6 +138,20 @@ class OrderService {
     }
   }
 
+  /**
+   * Aggregate stats for the dashboard.
+   *   - totalOrders: count of all orders
+   */
+  static async getStats() {
+    try {
+      const totalOrders = await OrderModel.countDocuments();
+      return { totalOrders };
+    } catch (error) {
+      console.error("OrderService.getStats - error", error);
+      throw error;
+    }
+  }
+
   static async getBooksInOrder(id) {
     try {
       const books = await PurchasedBooksModel.find({ orderId: id });

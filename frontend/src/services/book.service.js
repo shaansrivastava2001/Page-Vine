@@ -10,7 +10,27 @@ const userServiceUrl = `${process.env.REACT_APP_USER_MS_URL}/users`;
  */
 class BookService{
 
-  
+  /** Dashboard stats: { availableCount, totalCount, totalQuantity, pendingRequestsCount } */
+  async getStats() {
+    return axios.get(`${bookServiceUrl}/stats`, { params: { token: Cookies.get('token') } });
+  }
+
+  /** List book requests (defaults to status=pending). */
+  async getRequests(status = 'pending') {
+    return axios.get(`${bookServiceUrl}/requests`, {
+      params: { token: Cookies.get('token'), status }
+    });
+  }
+
+  /** Mark a request as fulfilled. */
+  async fulfillRequest(requestId) {
+    return axios.post(
+      `${bookServiceUrl}/requests/${requestId}/fulfill`,
+      { token: Cookies.get('token') }
+    );
+  }
+
+
   /**
    * Adding the book into the database
    * @param {Object} bookDetails 

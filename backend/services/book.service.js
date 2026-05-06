@@ -1,6 +1,7 @@
 const { ObjectId } = require("mongodb");
 const BookModel = require("../database/schema/book.schema");
 const UserModel = require("../database/schema/user.schema");
+const BookRequestModel = require("../database/schema/bookRequest.schema");
 const UserService = require("../services/user.service");
 const EmailService = require("../services/email/email.service");
 const EmailStyle = require("../styles/email.style");
@@ -39,6 +40,32 @@ class BookService {
       return books.length;
     } catch (error) {
       console.error(`BookService.countBooks - error`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Aggregate stats for the dashboard:
+   *   - availableCount: books with quantity > 0
+   *   - totalCount:     books in the collection
+   *   - totalQuantity:  sum of quantity across all (non-deleted) books
+   */
+  static async getStats() {
+    try {
+      const baseFilter = { isDeleted: { $ne: true } };
+      const [availableCount, totalCount, qtyAgg, pendingRequestsCount] = await Promise.all([
+        BookModel.countDocuments({ ...baseFilter, quantity: { $gt: 0 } }),
+        BookModel.countDocuments(baseFilter),
+        BookModel.aggregate([
+          { $match: baseFilter },
+          { $group: { _id: null, total: { $sum: "$quantity" } } },
+        ]),
+        BookRequestModel.countDocuments({ status: "pending" }),
+      ]);
+      const totalQuantity = qtyAgg[0]?.total || 0;
+      return { availableCount, totalCount, totalQuantity, pendingRequestsCount };
+    } catch (error) {
+      console.error("BookService.getStats - error", error);
       throw error;
     }
   }
@@ -236,6 +263,36 @@ class BookService {
   }
 
   /**
+   * List pending book requests, newest first.
+   */
+  static async getRequests(status = "pending") {
+    try {
+      return await BookRequestModel.find({ status }).sort({ createdAt: -1 });
+    } catch (error) {
+      console.error("BookService.getRequests - error", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Mark a book request as fulfilled. Returns the updated request, or null
+   * if the id doesn't exist / wasn't pending.
+   */
+  static async fulfillRequest(requestId, fulfilledByUserId) {
+    try {
+      const updated = await BookRequestModel.findOneAndUpdate(
+        { _id: requestId, status: "pending" },
+        { status: "fulfilled", fulfilledByUserId },
+        { new: true }
+      );
+      return updated;
+    } catch (error) {
+      console.error(`BookService.fulfillRequest - error id=${requestId}`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Requests a book from admin
    * @param {Object} body
    * @returns a status message
@@ -245,6 +302,17 @@ class BookService {
       const user = await UserService.findUserById(body.userId);
       const bookName = body.bookName;
       const author = body.author;
+
+      // Persist the request first so the dashboard count is accurate even
+      // if the notification email fails downstream.
+      await BookRequestModel.create({
+        bookName,
+        author,
+        userId: body.userId,
+        userName: user?.name,
+        userEmail: user?.email,
+        status: "pending",
+      });
 
       const userEmail = process.env.EMAIL;
       const subject = `Someone requested a book`;

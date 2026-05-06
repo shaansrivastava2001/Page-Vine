@@ -4,6 +4,10 @@ const OtpModel = require("../database/schema/otp.schema");
 const bcrypt = require("bcrypt");
 const CommonEmailService = require("./email/common.service");
 
+// Single source of truth for which roles can be assigned. Self-registration
+// always lands at "User"; admin-created accounts can pick any of these.
+const ALLOWED_ROLES = ["User", "Implementor", "Admin", "Super Admin"];
+
 /**
  * Class for users service
  */
@@ -95,20 +99,47 @@ class UsersService {
    */
   static async registerUser(body) {
     try {
-      let saltRounds = 10;
-      let hashedPass = bcrypt.hashSync(body.password, saltRounds);
-      body.password = hashedPass;
-      body.role = "User";
-      if (body.isVerified === undefined) {
-        body.isVerified = false;
-      }
-      let newUser = new UserModel(body);
+      const saltRounds = 10;
+      const hashedPass = bcrypt.hashSync(body.password, saltRounds);
 
+      // Honor a passed-in role only if it's in the allow-list; otherwise default to "User".
+      // Public self-registration shouldn't pass role at all → safe default.
+      const role = ALLOWED_ROLES.includes(body.role) ? body.role : "User";
+
+      const doc = {
+        ...body,
+        password: hashedPass,
+        role,
+        isVerified: body.isVerified === undefined ? false : body.isVerified,
+      };
+
+      const newUser = new UserModel(doc);
       await newUser.save();
-      console.log(`UsersService.registerUser - success id=${newUser._id}`);
+      console.log(`UsersService.registerUser - success id=${newUser._id} role=${role}`);
       return newUser;
     } catch (error) {
       console.error(`UsersService.registerUser - error username=${body.username}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Static helper exposing the allow-list to callers (e.g. controllers validating input).
+   */
+  static getAllowedRoles() {
+    return [...ALLOWED_ROLES];
+  }
+
+  /**
+   * Aggregate stats for the dashboard.
+   *   - totalUsers: count of all user documents
+   */
+  static async getStats() {
+    try {
+      const totalUsers = await UserModel.countDocuments();
+      return { totalUsers };
+    } catch (error) {
+      console.error("UsersService.getStats - error", error);
       throw error;
     }
   }

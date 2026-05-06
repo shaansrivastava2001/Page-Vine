@@ -127,6 +127,45 @@ class BookController {
       return res.status(401).json({error: error})
     }
   }
+
+  /**
+   * Dashboard stats for books.
+   */
+  static async getStats(_req, res) {
+    try {
+      const stats = await BookService.getStats();
+      return res.status(200).json(stats);
+    } catch (error) {
+      console.error("getStats - error", error);
+      return res.status(500).json({ message: "Failed to load stats" });
+    }
+  }
+
+  /** GET /books/requests — list pending requests. */
+  static async getRequests(req, res) {
+    try {
+      const status = req.query.status || "pending";
+      const requests = await BookService.getRequests(status);
+      return res.status(200).json({ requests });
+    } catch (error) {
+      console.error("getRequests - error", error);
+      return res.status(500).json({ message: "Failed to load requests" });
+    }
+  }
+
+  /** POST /books/requests/:id/fulfill — mark a request fulfilled. */
+  static async fulfillRequest(req, res) {
+    try {
+      const updated = await BookService.fulfillRequest(req.params.id, req.user?._id);
+      if (!updated) {
+        return res.status(404).json({ message: "Request not found or already fulfilled" });
+      }
+      return res.status(200).json({ request: updated });
+    } catch (error) {
+      console.error("fulfillRequest - error", error);
+      return res.status(500).json({ message: "Failed to fulfill request" });
+    }
+  }
 }
 
 module.exports = BookController;

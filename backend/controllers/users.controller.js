@@ -38,6 +38,44 @@ class UserController {
   }
 
   /**
+   * Admin-only: create a user with a chosen role. Password is hashed by registerUser.
+   * Account is created pre-verified (no email OTP required for admin-created users).
+   */
+  static async createUser(req, res) {
+    try {
+      const { name, username, email, password, role } = req.body;
+
+      if (!name || !username || !email || !password || !role) {
+        return res.status(400).json({ message: "All fields (name, username, email, password, role) are required" });
+      }
+
+      const allowed = UserService.getAllowedRoles();
+      if (!allowed.includes(role)) {
+        return res.status(400).json({ message: `Invalid role. Must be one of: ${allowed.join(", ")}` });
+      }
+
+      const byEmail = await UserService.findUserByEmail(email);
+      if (byEmail) return res.status(409).json({ message: "A user with this email already exists" });
+
+      const byUsername = await UserService.findUserByUsername(username);
+      if (byUsername) return res.status(409).json({ message: "Username is taken" });
+
+      const created = await UserService.registerUser({
+        name, username, email, password, role,
+        isVerified: true,
+      });
+      if (!created) return res.status(500).json({ message: "Failed to create user" });
+
+      // Strip password before returning
+      const { password: _omit, ...safe } = created.toObject();
+      return res.status(201).json({ user: safe });
+    } catch (error) {
+      console.error("createUser - error", error);
+      return res.status(500).json({ message: "Failed to create user" });
+    }
+  }
+
+  /**
    * Registers a new user in the database.
    * @param {Object} req
    * @param {Object} res
@@ -274,6 +312,19 @@ class UserController {
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error });
+    }
+  }
+
+  /**
+   * Dashboard stats for users (total user count).
+   */
+  static async getStats(_req, res) {
+    try {
+      const stats = await UserService.getStats();
+      return res.status(200).json(stats);
+    } catch (error) {
+      console.error("getStats - error", error);
+      return res.status(500).json({ message: "Failed to load stats" });
     }
   }
 }

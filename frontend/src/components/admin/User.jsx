@@ -16,12 +16,14 @@ const User = (props) => {
   
   const navigate = useNavigate();
   
-  const {name,username,email,_id} = props.user;
+  const {name,username,email,role,_id} = props.user;
   
   useEffect(() => {
-    (async ()=>{
-      const donationData =  await UserService.getDonations(_id);
-      setDonations(donationData.data.donations);
+    (async () => {
+      const donationData = await UserService.getDonations(_id);
+      // Backend returns the donation list, not a count — derive the number here.
+      const list = donationData?.data?.donations;
+      setDonations(Array.isArray(list) ? list.length : Number(list) || 0);
     })();
   }, []);
 
@@ -41,6 +43,7 @@ const User = (props) => {
       <td>{name}</td>
       <td>{username}</td>
       <td>{email}</td>
+      <td><span className="role-badge">{role || "User"}</span></td>
       <td>{donations}</td>
     </tr>
     </>

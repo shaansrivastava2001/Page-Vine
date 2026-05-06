@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import UserService from '../../../services/user.service';
 
@@ -14,8 +13,6 @@ const Orders_Dashboard = () => {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const pageNumbers = [];
-    
-    const navigate = useNavigate();
 
     useEffect(() => {
         (async ()=>{
@@ -85,11 +82,11 @@ const Orders_Dashboard = () => {
     <>
     <Header></Header>
       <div className="container bookList">
-        <div className="btn-group mt-2">
-            <button className="back-btn" onClick={() => navigate(-1)}>
-            <i className="fa-solid fa-arrow-left"></i>
-            </button>
-          <h3 className="my-3">Customers Orders</h3>
+        <div className="page-header">
+          <div className="page-header__text">
+            <h2 className="page-title">Customer orders</h2>
+            <p className="page-subtitle">All orders placed across the library.</p>
+          </div>
         </div>
         <div className="components">
           <input
@@ -111,11 +108,20 @@ const Orders_Dashboard = () => {
             </thead>
             <tbody>
             {
-            orders?.map((item)=>{
-              return (
-                <Order order={item} key={item._id}/>
+              orders === undefined ? (
+                <tr>
+                  <td colSpan="5" className="text-center" style={{ padding: 32, color: "#6b7384" }}>Loading orders…</td>
+                </tr>
+              ) : orders.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center" style={{ padding: "48px 16px", color: "#6b7384" }}>
+                    <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 4, color: "#20242f" }}>No orders yet</div>
+                    <div style={{ fontSize: 13 }}>Customer orders will appear here once placed.</div>
+                  </td>
+                </tr>
+              ) : (
+                orders.map((item) => <Order order={item} key={item._id}/>)
               )
-            })
             }
             </tbody>
           </table>

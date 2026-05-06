@@ -2,7 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import "./authenticationStyle.scss";
-import { metadata } from '../../metadata/metadata';
+import "../../styles/style.scss";
+import { metadata } from "../../metadata/metadata";
 
 import UserService from "../../services/user.service";
 
@@ -12,42 +13,45 @@ import "react-toastify/dist/ReactToastify.css";
 const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 const Register = () => {
-  const [username, setUsername] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
 
-  // Derived: avoids the stale-closure bug the previous handlers had.
-  const allFilled =
-    name.trim().length > 0 &&
-    username.trim().length > 0 &&
-    email.trim().length > 0 &&
-    password.length > 0;
-  const canSubmit = allFilled && !emailError && !submitting;
+  const canSubmit =
+    form.name.trim() &&
+    form.username.trim() &&
+    form.email.trim() &&
+    form.password.length >= 6 &&
+    !emailError &&
+    !submitting;
 
   useEffect(() => {
     document.body.classList.add("auth-bg");
     return () => document.body.classList.remove("auth-bg");
   }, []);
 
-  const onEmailChange = (e) => {
-    const v = e.target.value;
-    setEmail(v);
-    setEmailError(v && !emailRegex.test(v) ? "Please enter a valid email address" : "");
+  const set = (key) => (e) => {
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+    if (key === "email") {
+      setEmailError(e.target.value && !emailRegex.test(e.target.value) ? "Please enter a valid email address" : "");
+    }
   };
 
-  const register = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!canSubmit) return;
 
     setSubmitting(true);
     try {
-      const response = await UserService.registerUser(name, username, email, password);
+      const response = await UserService.registerUser(form.name, form.username, form.email, form.password);
       const newUserId = response?.data?.newUser?._id;
       if (!newUserId) {
         toast.error("Registration failed. Please try again.");
@@ -55,7 +59,7 @@ const Register = () => {
       }
       const otpResponse = await UserService.sendOtp(newUserId);
       if (otpResponse) {
-        navigate('/verifyEmail', { state: { id: newUserId, email } });
+        navigate("/verifyEmail", { state: { id: newUserId, email: form.email } });
       } else {
         toast.error("Could not send verification code");
       }
@@ -68,94 +72,84 @@ const Register = () => {
   };
 
   return (
-    <>
-      <div className="container auth-container">
-        <div className="row">
-          <div className="col-sm-6 left">
-            <h1>{metadata.appName}</h1>
-            <h2>{metadata.appTagline}</h2>
-            <img src={metadata.appSvg} alt="donation image" className="mt-5 img-responsive" />
-          </div>
-          <div className="col-sm-6 right">
-            <div className="register-card">
-              <h2>Register</h2>
-              <h3>Enter your credentials</h3>
-              <form className="register-form" onSubmit={register} autoComplete="off" noValidate>
-                <div className="form-floating mb-3">
-                  <input
-                    type="text"
-                    placeholder="Name"
-                    name="name"
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="form-control"
-                    autoComplete="name"
-                  />
-                  <label htmlFor="name">Name</label>
-                </div>
-                <div className="form-floating mb-3">
-                  <input
-                    type="text"
-                    placeholder="Username"
-                    name="username"
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="form-control"
-                    autoComplete="username"
-                  />
-                  <label htmlFor="username">Username</label>
-                </div>
-                <div className="form-floating">
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    name="email"
-                    id="email"
-                    value={email}
-                    onChange={onEmailChange}
-                    className="form-control"
-                    autoComplete="email"
-                    aria-invalid={!!emailError}
-                    aria-describedby={emailError ? "email-error" : undefined}
-                  />
-                  <label htmlFor="email">Email</label>
-                </div>
-                <p id="email-error" className="text-danger m-0 p-0" role="alert">{emailError}</p>
-                <div className="input-container form-floating">
-                  <input
-                    className="input-field form-control"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    name="password"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="new-password"
-                  />
-                  <label htmlFor="password">Password</label>
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    onClick={() => setShowPassword((v) => !v)}
-                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setShowPassword((v) => !v)}
-                  >
-                    <i className={showPassword ? "fa-sharp fa-solid fa-eye toggle" : "fa-solid fa-eye-slash"} id="toggle"></i>
-                  </span>
-                </div>
-                <Link to={"/login"}>Already have an account?</Link>
-                <button type="submit" id="submitBtn" disabled={!canSubmit}>
-                  {submitting ? "Creating account…" : "Register"}
+    <div className="auth-page">
+      <aside className="auth-hero">
+        <h1 className="auth-hero__title">{metadata.appName}</h1>
+        <p className="auth-hero__tagline">{metadata.appTagline}</p>
+        <img src={metadata.appSvg} alt="" className="auth-hero__image" />
+      </aside>
+
+      <div className="auth-card auth-card--wide">
+        <div className="auth-card__brand">{metadata.appName}</div>
+
+        <h1 className="auth-card__title">Create your account</h1>
+        <p className="auth-card__subtitle">Join the library — donate, borrow, and request books.</p>
+
+        <form className="auth-form" onSubmit={submit} autoComplete="off" noValidate>
+          <div className="form-grid">
+            <div className="field">
+              <label htmlFor="name" className="field__label">Full name</label>
+              <input id="name" type="text" className="field__input" value={form.name} onChange={set("name")} placeholder="Jane Doe" autoComplete="name" />
+            </div>
+
+            <div className="field">
+              <label htmlFor="username" className="field__label">Username</label>
+              <input id="username" type="text" className="field__input" value={form.username} onChange={set("username")} placeholder="janedoe" autoComplete="username" />
+            </div>
+
+            <div className="field field--full">
+              <label htmlFor="email" className="field__label">Email</label>
+              <input
+                id="email"
+                type="email"
+                className="field__input"
+                value={form.email}
+                onChange={set("email")}
+                placeholder="you@example.com"
+                autoComplete="email"
+                aria-invalid={!!emailError}
+                aria-describedby={emailError ? "email-error" : undefined}
+              />
+              {emailError && <span id="email-error" className="field__error">{emailError}</span>}
+            </div>
+
+            <div className="field field--full">
+              <label htmlFor="password" className="field__label">Password</label>
+              <div className="field__input-wrap">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  className="field__input"
+                  value={form.password}
+                  onChange={set("password")}
+                  placeholder="Minimum 6 characters"
+                  autoComplete="new-password"
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  className="field__addon"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => setShowPassword((v) => !v)}
+                  tabIndex={-1}
+                >
+                  <i className={showPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye"}></i>
                 </button>
-              </form>
+              </div>
             </div>
           </div>
-        </div>
+
+          <button type="submit" className="btn-primary auth-submit" disabled={!canSubmit}>
+            {submitting ? "Creating account…" : "Create account"}
+          </button>
+        </form>
+
+        <p className="auth-footer">
+          Already have an account? <Link to="/login">Sign in</Link>
+        </p>
       </div>
       <ToastContainer />
-    </>
+    </div>
   );
 };
 

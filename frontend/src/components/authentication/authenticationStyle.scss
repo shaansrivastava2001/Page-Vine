@@ -1,449 +1,198 @@
 @import "../../styles/variables";
 
-a,
-button {
-  cursor: pointer;
-  text-decoration: none;
+// =============================================================================
+// Auth pages — clean, centered card on a soft brand-tinted background.
+// Uses the same `field` / `btn-primary` primitives as the rest of the app.
+// =============================================================================
+
+body.auth-bg {
+  background:
+    radial-gradient(circle at 20% 0%, rgba($brand-300, 0.18), transparent 40%),
+    radial-gradient(circle at 80% 100%, rgba($brand-400, 0.16), transparent 45%),
+    $color-bg;
+  min-height: 100vh;
 }
 
-.login-card,
-.register-card {
-  margin: auto;
-  margin-top: 4rem;
-  width: 100%;
-  padding: 70px 30px 44px;
-  border-radius: 24px;
-  background: $white;
-  text-align: center;
-}
-
-.register-card {
-  margin-top: 30px;
-}
-
-.login-card > h2,
-.register-card h2{
-  margin: 0 0 12px;
-  font-size: 36px;
-  font-weight: 700;
-}
-
-.login-card > h3,
-.register-card > h3 {
-  margin: 0 0 30px;
-  font-weight: 700;
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.38);
-}
-
-.login-form,
-.register-form{
-  width: 100%;
-  margin: 0;
+.auth-page {
+  min-height: 100vh;
   display: grid;
-  gap: 16px;
+  grid-template-columns: 1fr;
+  align-items: center;
+  justify-items: center;
+  padding: $space-6 $space-4;
+  gap: $space-8;
+
+  @media (min-width: 900px) {
+    grid-template-columns: 1fr minmax(380px, 460px);
+    align-items: center;
+    justify-items: stretch;
+    max-width: 1100px;
+    margin: 0 auto;
+    gap: $space-12;
+    padding: $space-8;
+  }
 }
 
-.login-form input,
-.register-form input{
+.auth-hero {
+  display: none;
+  text-align: center;
+
+  @media (min-width: 900px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  &__title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+    letter-spacing: -0.02em;
+    margin: 0 0 $space-3;
+    line-height: 1.1;
+  }
+
+  &__tagline {
+    font-size: $font-size-base;
+    color: $color-text-muted;
+    margin: 0 0 $space-6;
+    max-width: 380px;
+  }
+
+  &__image {
+    max-width: 100%;
+    width: 420px;
+    height: auto;
+  }
+}
+
+.auth-card {
   width: 100%;
-  height: 56px;
-  padding: 0 16px;
-  border-radius: 8px;
-  font-weight: 700;
-  border: 2px solid $input-color;
+  max-width: 420px;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  padding: $space-8 $space-6;
+
+  &--wide { max-width: 520px; }
+
+  &__brand {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-primary;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: $space-5;
+    text-align: center;
+  }
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+    letter-spacing: -0.015em;
+    margin: 0 0 $space-1;
+    text-align: center;
+  }
+
+  &__subtitle {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    margin: 0 0 $space-6;
+    text-align: center;
+  }
 }
 
-.input-container {
-  position: relative;
-  display: inline-block;
-}
-
-.input-container span{
-  position: absolute;
-  right: 4px;
-  top: 30%;
-  transform: translate(-50%);
-  cursor: pointer;
-}
-
-.login-form > button:enabled,
-.register-form > button:enabled,
-button.verifyOtp:enabled {
-  padding: 15px 25px;
-  border: unset;
-  border-radius: 15px;
-  color: $button-color;
-  z-index: 1;
-  background: $authentication-button-background;
-  position: relative;
-  font-weight: 1000;
-  font-size: 17px;
-  -webkit-box-shadow: 4px 8px 19px -3px $box-shadow-color;
-  box-shadow: 4px 8px 19px -3px $box-shadow-color;
-  transition: all 250ms;
-  overflow: hidden;
-}
-
-.login-form > button:disabled,
-.register-form > button:disabled,
-button.verifyOtp:disabled {
-  padding: 15px 25px;
-  border: unset;
-  border-radius: 15px;
-  color: $button-color;
-  z-index: 1;
-  background: $authentication-button-background;
-  position: relative;
-  font-weight: 1000;
-  font-size: 17px;
-}
-
-.login-form > button::before,
-.register-form > button::before,
-button.verifyOtp::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 0;
-  border-radius: 15px;
-  background-color: $button-color;
-  z-index: -1;
-  -webkit-box-shadow: 4px 8px 19px -3px $box-shadow-color;
-  box-shadow: 4px 8px 19px -3px $box-shadow-color;
-  transition: all 250ms;
-}
-
-.login-form > button:enabled:hover,
-.register-form > button:hover:enabled, 
-button.verifyOtp:hover:enabled {
-  color: $authentication-button-background;
-}
-
-.login-form > button:hover:enabled::before,
-.register-form > button:hover:enabled::before, 
-button.verifyOtp:hover:enabled::before {
-  width: 100%;
-}
-
-.login-card,
-.register-card,
-.otp-container {
-  position: relative;
-}
-  
-#logout a {
-  text-decoration: none;
-  color: $black;
-}
-
-#logout {
-  margin-right: 30px;
-  padding: 6px 22px 6px 22px;
-  border-radius: 13px;
-  color: $black;
-}
-
-.register-form #submitBtn:disabled,
-.register-form #submitBtn[disabled] {
-  background-color: $disabled-button-bg;
-  color: grey;
-  cursor: not-allowed;
-}
-
-.login-form #submitBtn:disabled,
-.login-form #submitBtn[disabled] {
-  background-color: $disabled-button-bg;
-  color: grey;
-  cursor: not-allowed;
-}
-
-.login-form input::placeholder,
-.register-form input::placeholder {
-  color: #999;
-  font-style: italic;
-}
-
-.login-form label,
-.register-form label {
-  color: grey;
-  font-size: 16px;
-  font-weight: 500;
-  transition: 0.2s ease-out;
-  pointer-events: none;
-  position: absolute;
-}
-
-.login-form input:focus + label,
-.login-form input:not(:placeholder-shown) + label,
-.register-form input:focus + label,
-.register-form input:not(:placeholder-shown) + label {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.login-form .form-control:focus,
-.register-form .form-control:focus{
-  outline: none;
-  border: 1px solid rgb(190, 184, 214);
-  box-shadow: none;
-}
-
-.auth-container img{
-  height: 300px;
-  width: 500px;
-  color: rgba(195, 207, 216, 0.873);
-}
-
-.auth-container .left{
-  margin-top: 100px;
-  color: $white;
-  text-align: center;
-}
-
-.auth-container .left h1{
-  font-weight: 700;
-  color: rgba(0, 0, 0, 0.614);
-}
-
-.auth-container .left h2{
-  margin-bottom: 30px;
-  color: rgba(0, 0, 0, 0.614);
-}
-
-.otp-form #submitBtn:disabled,
-.otp-form #submitBtn[disabled] {
-  background-color: $disabled-button-bg;
-  color: grey;
-  cursor: not-allowed;
-}
-
-.or {
-  margin-bottom: 0;
-}
-
-.otp-container{
-  padding: 30px;
-  max-width: 700px;
-  margin: auto;
-  margin-top: 150px;
-  border-radius: 24px;
-  background: $white;
-}
-
-.otp-container h2{
-  margin: 0 0 12px;
-  font-size: 26px;
-  font-weight: 700;
-  text-align: center;
-}
-
-.otp-container p{
-  margin: 0 0 30px;
-  font-weight: 700;
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.38);
-  text-align: center;
-}
-
-.code-container{
+.auth-form {
   display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  .field { gap: 6px; }
+  .field__input { height: 40px; font-size: $font-size-sm; }
+}
+
+// Wrapper used when an input has a trailing icon button (eye toggle)
+.field__input-wrap {
+  position: relative;
+
+  .field__input { padding-right: 40px; }
+}
+
+.field__addon {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin: 40px 0;
-}
-
-.code{
-  caret-color: transparent; 
-  border-radius: 10px;
-  font-size: 30px;
-  width: 75px;
-  height: 75px;
-  margin: 10px;
-  text-align: center;
-  padding: 0 16px;
-  font-weight: 700;
-  border: 2px solid $input-color;
-}
-
-.code::-webkit-outer-spin-button,
-.code::-webkit-inner-spin-button{
-  -webkit-appearance: none;
-}
-
-.code:valid{
-  box-shadow: 0 10px 10px -5px $box-shadow-otp;
-}
-
-button.verifyOtp{
-  display: block;
-  margin: auto;
-  width: 40%;
-}
-
-.resend{
-  color: $primary-color;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.otp-container .email{
-  color: $content-text-color;
-}
-
-.otp-container .register{
-  color: $primary-color;
-  font-weight: 600;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-@media (max-width: 600px){
-  .otp-container{
-    width: 80%;
-  }
-
-  .code-container{
-    flex-wrap: wrap;
-  }
-
-  .code{
-    height: 50px;
-    max-width: 50px;
-    font-size: bold;
-  }
-}
-
-@media (width>=500px) {
-  .login-card,
-  .register-card,
-  .otp-card {
-    width: 400px;
-  }
-
-  .register-card {
-    width: 550px;
-  }
-}
-
-@media (width<=576px) {
-  .auth-container img{
-    display: none;
-  }
-
-  .auth-container div.left{
-    margin-top: 50px;
-    // margin-bottom: 31px;
-  }
-
-  .auth-container .right{
-    padding-bottom:33px;
-  }
-}
-
-// Replaces the previous inline-style body hack in Login.jsx
-body.auth-bg {
-  background-color: rgba(195, 207, 216, 0.873);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-// =============================================================================
-// Token-based polish (appended; overrides earlier hardcoded values).
-// Keep this block at the end of the file so it wins on equal specificity.
-// =============================================================================
-.login-card,
-.register-card {
-  border-radius: $radius-xl;
-  box-shadow: $shadow-lg;
-  border: 1px solid $color-border;
-}
-
-.login-card > h2,
-.register-card h2 {
-  color: $color-text;
-  font-weight: $font-weight-semibold;
-  font-size: $font-size-3xl;
-}
-
-.login-card > h3,
-.register-card > h3 {
+  background: transparent;
+  border: 0;
   color: $color-text-muted;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: color $transition-fast, background $transition-fast;
+
+  &:hover { color: $color-text; background: $color-surface-alt; }
+  &:focus-visible { outline: none; box-shadow: $shadow-focus; }
+}
+
+.auth-submit {
+  width: 100%;
+  height: 40px;
+  margin-top: $space-2;
+  font-size: $font-size-sm;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin: $space-5 0 $space-4;
+  color: $color-text-subtle;
+  font-size: $font-size-xs;
   font-weight: $font-weight-medium;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  &::before, &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: $color-border;
+  }
 }
 
-.login-form input,
-.register-form input {
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-  font-weight: $font-weight-regular;
-  transition: border-color $transition-fast, box-shadow $transition-fast;
+.auth-google {
+  display: flex;
+  justify-content: center;
+
+  // Make the Google button stretch to match input width
+  > div, > div > div { width: 100% !important; }
+  iframe { width: 100% !important; }
 }
 
-.login-form .form-control:focus,
-.register-form .form-control:focus {
-  border-color: $color-primary;
-  box-shadow: $shadow-focus;
+.auth-footer {
+  margin: $space-6 0 0;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+
+  a {
+    color: $color-primary;
+    font-weight: $font-weight-medium;
+    text-decoration: none;
+    &:hover { color: $color-primary-hover; text-decoration: underline; }
+  }
 }
 
-.login-form input::placeholder,
-.register-form input::placeholder {
-  color: $color-text-subtle;
-  font-style: normal;
-}
-
-.login-form > button:enabled,
-.register-form > button:enabled,
-button.verifyOtp:enabled {
-  background: $color-primary;
-  color: $color-text-on-brand;
-  border-radius: $radius-md;
-  font-weight: $font-weight-semibold;
-  font-size: $font-size-base;
-  letter-spacing: 0.01em;
-  box-shadow: $shadow-sm;
-}
-
-.login-form > button::before,
-.register-form > button::before,
-button.verifyOtp::before {
-  border-radius: $radius-md;
-  background-color: $color-primary-hover;
-}
-
-.login-form > button:hover:enabled,
-.register-form > button:hover:enabled,
-button.verifyOtp:hover:enabled {
-  color: $color-text-on-brand;
-  box-shadow: $shadow-md;
-}
-
-.login-form #submitBtn:disabled,
-.login-form #submitBtn[disabled],
-.register-form #submitBtn:disabled,
-.register-form #submitBtn[disabled],
-.otp-form #submitBtn:disabled,
-.otp-form #submitBtn[disabled] {
-  background-color: $color-surface-alt;
-  color: $color-text-subtle;
-  border-radius: $radius-md;
-  box-shadow: none;
-  cursor: not-allowed;
-}
-
-.code {
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-  font-weight: $font-weight-semibold;
-  transition: border-color $transition-fast, box-shadow $transition-fast;
-
-  &:focus { border-color: $color-primary; box-shadow: $shadow-focus; outline: none; }
-}
-
-.otp-container {
-  border-radius: $radius-xl;
-  box-shadow: $shadow-lg;
-  border: 1px solid $color-border;
+@media (max-width: 480px) {
+  .auth-card { padding: $space-6 $space-4; box-shadow: none; border: 0; background: transparent; }
 }

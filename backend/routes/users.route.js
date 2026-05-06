@@ -2,11 +2,23 @@ const express = require("express");
 
 const UsersController = require("../controllers/users.controller");
 const tokenMiddleware = require("../middlewares/token.middleware");
+const requireRole = require("../middlewares/role.middleware");
 
 const router = express.Router();
 
 // Routes for getting users
 router.post("/users/getUsers", tokenMiddleware, UsersController.getUsers);
+
+// Dashboard stats (auth-required, no role gating — aggregate counts only)
+router.get("/users/stats", tokenMiddleware, UsersController.getStats);
+
+// Admin-only: create a user with an assigned role
+router.post(
+  "/users/create",
+  tokenMiddleware,
+  requireRole("Admin", "Super Admin"),
+  UsersController.createUser
+);
 
 // Routes for registering and login of user
 router.post("/users/register", UsersController.register);

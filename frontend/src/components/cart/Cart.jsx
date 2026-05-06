@@ -1,4 +1,4 @@
-import { useEffect, useState, React, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import "../../styles/style.scss";
@@ -9,30 +9,19 @@ import Header from "../common/Header";
 import CartItem from "./CartItem";
 
 import Spinner from "react-bootstrap/Spinner";
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
-/**
- *
- * @returns {React.Component} Cart component
- */
 const Cart = () => {
-  // State variable for items in the cart of user
   const [items, setItems] = useState();
-
-  // Total price of the cart
   const [totalPrice, setTotalPrice] = useState(0);
-
-  // For loader after sending request for email
   const [loading, setLoading] = useState(false);
-
-  // For confirmation box
   const [show, setShow] = useState(false);
 
   const childRef = useRef(null);
-  
   const navigate = useNavigate();
 
+  const url = `${process.env.REACT_APP_CART_MS_URL}/cart/getCartItems`;
 
   useEffect(() => {
     (async () => {
@@ -42,84 +31,93 @@ const Cart = () => {
     })();
   }, []);
 
-
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-
-  const url = `${process.env.REACT_APP_CART_MS_URL}/cart/getCartItems`;
-
-  // Calls the function in header component
   const handleCallChildFunction = () => {
-    if (childRef.current) {
-      childRef.current.changeCartCount();
-    }
+    if (childRef.current) childRef.current.changeCartCount();
   };
 
-  /**
-   * Sending backend API request to clear the cart
-   */
-  const clearCart = () => {
-    CartService.clearCart();
-  };
+  const clearCart = () => CartService.clearCart();
 
   const checkout = async () => {
     setLoading(true);
-    console.log(await CartService.checkout(totalPrice));
+    await CartService.checkout(totalPrice);
     setLoading(false);
     await CartService.addOrder(totalPrice);
     CartService.clearCart();
   };
 
-  // Passed as a prop to update the total price
-  const handleUpdateQuantity = (price) => {
-    setTotalPrice(totalPrice + price);
-  };
+  const handleUpdateQuantity = (price) => setTotalPrice(totalPrice + price);
+
+  const isEmpty = !items || items.length === 0;
 
   return (
     <>
-      <Header ref={childRef}></Header>
+      <Header ref={childRef} />
       <div className="container bookList">
-        <div className="cart-heading mt-2">
-          <div className="left-heading">
-            <button className="back-btn" onClick={() => navigate(-1)}>
-            <i class="fa-solid fa-arrow-left"></i>
+        <div className="page-header" style={{ justifyContent: "space-between" }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+            <button className="back-btn" onClick={() => navigate(-1)} aria-label="Go back">
+              <i className="fa-solid fa-arrow-left"></i>
             </button>
-            <h3 className="my-3">Your Cart</h3>
+            <div className="page-header__text">
+              <h2 className="page-title">Your cart</h2>
+              <p className="page-subtitle">{isEmpty ? "Add a book to start your order." : `${items.length} ${items.length === 1 ? "item" : "items"} ready to checkout.`}</p>
+            </div>
           </div>
-          <div className="right-heading" style={{ width: 600 }}>
-            <span className="cartTotal">Cart total: Rs. {totalPrice}</span>
-          </div>
+          {!isEmpty && (
+            <div className="cart-total-chip">
+              <span className="cart-total-chip__label">Total</span>
+              <span className="cart-total-chip__value">Rs. {totalPrice}</span>
+            </div>
+          )}
         </div>
-        {items?.length ? (
+
+        {isEmpty ? (
+          <div className="empty-state">
+            <div className="empty-state__icon">
+              <i className="fa-solid fa-cart-shopping"></i>
+            </div>
+            <h3 className="empty-state__title">Your cart is empty</h3>
+            <p className="empty-state__subtitle">
+              Browse the library and add a book to your cart to get started.
+            </p>
+            <div className="empty-state__actions">
+              <Link to="/books">
+                <button className="btn-primary">Browse books</button>
+              </Link>
+            </div>
+          </div>
+        ) : (
           <>
-          {
-            loading?
-            null:
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Title</th>
-                  <th scope="col">Author</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Sale Price</th>
-                  <th scope="col">Quantity</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item) => {
-                    return (
-                      <CartItem item={item} key={item.title} onUpdateQuantity={handleUpdateQuantity}
-                        handleCallChildFunction = {handleCallChildFunction} />
-                    );
-                  })}
-              </tbody>
-          </table>
-          }
-            
-            <div className="components cartBottom">
+            {loading ? null : (
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Sale Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((item) => (
+                    <CartItem
+                      item={item}
+                      key={item.title}
+                      onUpdateQuantity={handleUpdateQuantity}
+                      handleCallChildFunction={handleCallChildFunction}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            <div className="cartBottom">
               {loading ? (
                 <button className="btn btn-loader" disabled>
                   <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />
@@ -127,71 +125,43 @@ const Cart = () => {
                 </button>
               ) : (
                 <>
-                  <button className="btn clearCart" onClick={clearCart}>
-                    Clear Cart
-                  </button>
-                  <button className="checkout" onClick={handleShow}>
-                    Proceed to checkout{" "}
-                    <i className="fa-regular fa-credit-card"></i>
+                  <button className="btn-link" onClick={clearCart}>Clear cart</button>
+                  <button className="btn-primary" onClick={handleShow}>
+                    <i className="fa-regular fa-credit-card" style={{ marginRight: 6 }}></i>
+                    Proceed to checkout
                   </button>
                 </>
               )}
             </div>
           </>
-        ) : (
-          <>
-            <h4
-              className="cartEmpty"
-              style={{ marginLeft: "auto", textAlign: "center" }}
-            >
-              Your Books Cart is empty
-            </h4>
-            <h4
-              className="cartEmpty py-3"
-              style={{ marginLeft: "auto", textAlign: "center" }}
-            >
-              Continue shopping on the{" "}
-              <Link to="/books" className="booksLink">
-                Books Page
-              </Link>
-            </h4>
-            <button className="btn addBooks" onClick={() => navigate("/books")}>
-              Add books
-            </button>
-          </>
         )}
       </div>
-      {loading ?  
-      <Modal show={show} onHide={handleClose} className="checkoutConfirmBox">
-      <Modal.Header closeButton className="closeButton">
-        <Modal.Title>Hold on</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>Placing you order</Modal.Body>
-      <Modal.Footer className="modalFooter">
-          <button className="btn btn-loader" disabled>
-            <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />
-            &nbsp;Placing order
-          </button>
-      </Modal.Footer>
-    </Modal>
-      :
-      <Modal show={show} onHide={handleClose} className="checkoutConfirmBox">
-        <Modal.Header closeButton className="closeButton">
-          <Modal.Title>Place Order</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Confirm your order of <span>Rs. {totalPrice}</span></Modal.Body>
-        <Modal.Footer className="modalFooter">
-          <Button onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button onClick={checkout} className="checkout">
-            Checkout
-          </Button>
-        </Modal.Footer>
-      </Modal>
 
-      }
-      
+      {loading ? (
+        <Modal show={show} onHide={handleClose} className="checkoutConfirmBox">
+          <Modal.Header closeButton className="closeButton">
+            <Modal.Title>Hold on</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Placing your order</Modal.Body>
+          <Modal.Footer className="modalFooter">
+            <button className="btn btn-loader" disabled>
+              <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />
+              &nbsp;Placing order
+            </button>
+          </Modal.Footer>
+        </Modal>
+      ) : (
+        <Modal show={show} onHide={handleClose} className="checkoutConfirmBox">
+          <Modal.Header closeButton className="closeButton">
+            <Modal.Title>Place order</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Confirm your order of <strong>Rs. {totalPrice}</strong></Modal.Body>
+          <Modal.Footer className="modalFooter">
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={checkout} className="checkout">Checkout</Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </>
   );
 };

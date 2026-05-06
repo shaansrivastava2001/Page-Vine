@@ -27,18 +27,32 @@ async getDonations(id) {
 
 /**
  * Get users based on pagination and filtering
- * @param {Number} page 
- * @param {Number} limit 
- * @param {String} search 
+ * @param {Number} page
+ * @param {Number} limit
+ * @param {String} search
  * @returns {Promise<{users,usersCount}>}
  */
 async getUsers(page,limit,search) {
   const url = `${userServiceUrl}/getUsers`;
   return ( await axios.post(url,{
-    page: page, limit: limit, 
+    page: page, limit: limit,
     searchQuery: search,
     token: Cookies.get('token')
   }));
+};
+
+/**
+ * Admin-only: create a user with a chosen role.
+ * @param {{name:string, username:string, email:string, password:string, role:string}} payload
+ */
+async createUser(payload) {
+  const url = `${userServiceUrl}/create`;
+  return axios.post(url, { ...payload, token: Cookies.get('token') });
+};
+
+/** Dashboard stats: { totalUsers } */
+async getStats() {
+  return axios.get(`${userServiceUrl}/stats`, { params: { token: Cookies.get('token') } });
 };
 
 // Fetch donations done by the user

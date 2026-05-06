@@ -107,6 +107,19 @@ class OrderController {
       return res.status(500).json({message: "Not able to find books in the order"});
     }
   }
+
+  /**
+   * Dashboard stats for orders.
+   */
+  static async getStats(_req, res) {
+    try {
+      const stats = await OrderService.getStats();
+      return res.status(200).json(stats);
+    } catch (error) {
+      console.error("getStats - error", error);
+      return res.status(500).json({ message: "Failed to load stats" });
+    }
+  }
 };
 
 module.exports = OrderController;
