@@ -342,3 +342,108 @@ button.verifyOtp{
     padding-bottom:33px;
   }
 }
+
+// Replaces the previous inline-style body hack in Login.jsx
+body.auth-bg {
+  background-color: rgba(195, 207, 216, 0.873);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+// =============================================================================
+// Token-based polish (appended; overrides earlier hardcoded values).
+// Keep this block at the end of the file so it wins on equal specificity.
+// =============================================================================
+.login-card,
+.register-card {
+  border-radius: $radius-xl;
+  box-shadow: $shadow-lg;
+  border: 1px solid $color-border;
+}
+
+.login-card > h2,
+.register-card h2 {
+  color: $color-text;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-3xl;
+}
+
+.login-card > h3,
+.register-card > h3 {
+  color: $color-text-muted;
+  font-weight: $font-weight-medium;
+}
+
+.login-form input,
+.register-form input {
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-weight: $font-weight-regular;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+}
+
+.login-form .form-control:focus,
+.register-form .form-control:focus {
+  border-color: $color-primary;
+  box-shadow: $shadow-focus;
+}
+
+.login-form input::placeholder,
+.register-form input::placeholder {
+  color: $color-text-subtle;
+  font-style: normal;
+}
+
+.login-form > button:enabled,
+.register-form > button:enabled,
+button.verifyOtp:enabled {
+  background: $color-primary;
+  color: $color-text-on-brand;
+  border-radius: $radius-md;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-base;
+  letter-spacing: 0.01em;
+  box-shadow: $shadow-sm;
+}
+
+.login-form > button::before,
+.register-form > button::before,
+button.verifyOtp::before {
+  border-radius: $radius-md;
+  background-color: $color-primary-hover;
+}
+
+.login-form > button:hover:enabled,
+.register-form > button:hover:enabled,
+button.verifyOtp:hover:enabled {
+  color: $color-text-on-brand;
+  box-shadow: $shadow-md;
+}
+
+.login-form #submitBtn:disabled,
+.login-form #submitBtn[disabled],
+.register-form #submitBtn:disabled,
+.register-form #submitBtn[disabled],
+.otp-form #submitBtn:disabled,
+.otp-form #submitBtn[disabled] {
+  background-color: $color-surface-alt;
+  color: $color-text-subtle;
+  border-radius: $radius-md;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.code {
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-weight: $font-weight-semibold;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:focus { border-color: $color-primary; box-shadow: $shadow-focus; outline: none; }
+}
+
+.otp-container {
+  border-radius: $radius-xl;
+  box-shadow: $shadow-lg;
+  border: 1px solid $color-border;
+}

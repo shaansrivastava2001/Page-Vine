@@ -16,18 +16,16 @@ const verifyToken = (token, secretKey) => {
  * @param {Object} res 
  * @param {Function} next 
  */
-const tokenMiddleware = (req,res,next)=>{
+const tokenMiddleware = (req, res, next) => {
     const token = req.query.token || req.body.token;
     const secret_key = process.env.SECRET_KEY;
-    
-    const decodedToken = verifyToken(token,secret_key);
-    
-    // Token is verified it means that user is authenticated to access the api's
-    if(decodedToken){
-        next();
-    } else {
-        res.status(500).send("Token verification failed");
+
+    const decodedToken = verifyToken(token, secret_key);
+    if (decodedToken) {
+        req.user = decodedToken;
+        return next();
     }
+    return res.status(401).json({ message: "Token verification failed" });
 }
 
 

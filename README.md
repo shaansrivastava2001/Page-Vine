@@ -17,7 +17,7 @@ The application consists of:
 
 Before you begin, make sure you have the following prerequisites installed on your machine:
 
-- **Node.js**: Install the latest stable version from https://nodejs.org
+- **Node.js**: v20 or newer (tested on v20 LTS through v25). Install from https://nodejs.org. The backend ships a small `patch-package` patch for `buffer-equal-constant-time` (a transitive dep of `jsonwebtoken`) so it runs on Node 22+ where `SlowBuffer` was removed; this is applied automatically by `npm install` via the `postinstall` hook.
 - **Git**: Install the latest stable version from https://git-scm.com/downloads
 - **MongoDB**: Set up a MongoDB instance (local or Atlas) from https://cloud.mongodb.com/
 
@@ -52,11 +52,10 @@ Before you begin, make sure you have the following prerequisites installed on yo
    
    Update the `.env` file with your configuration:
    ```
-   PORT=4000
-   USERS_PORT=4001
-   BOOKS_PORT=4002
-   CART_PORT=4003
-   ORDERS_PORT=4004
+   USERS_PORT=4000
+   ORDERS_PORT=4001
+   CART_PORT=4002
+   BOOKS_PORT=4003
    MONGO_URI=<your_mongodb_uri>
    EMAIL=<admin_email>
    PASSWORD=<app_password_from_google>
@@ -64,32 +63,36 @@ Before you begin, make sure you have the following prerequisites installed on yo
    SESSION_SECRET=<your_session_secret>
    ```
 
+   These match the defaults baked into each microservice entry file. If you set a single `PORT` instead, all services will try to bind to it — use the per-service vars above.
+
 4) Set up the admin user in the database:
    ```bash
    npm run setup
    ```
 
-5) Start the microservices. You can run them in separate terminals:
-   
-   **Terminal 1 - Users Service:**
+5) Start the microservices. Pick one of the options below.
+
+   > Note: `backend/server.js` is a shared Express app factory and is **not** a runnable entry point. Only the files in `backend/microservices/` start a server.
+
+   **Option A — npm scripts (separate terminals):**
+   ```bash
+   npm run start:user    # Users service
+   npm run start:book    # Books service
+   npm run start:cart    # Cart service
+   npm run start:order   # Orders service
+   ```
+
+   **Option B — plain node (separate terminals):**
    ```bash
    node microservices/users-ms.js
-   ```
-   
-   **Terminal 2 - Books Service:**
-   ```bash
    node microservices/books-ms.js
-   ```
-   
-   **Terminal 3 - Cart Service:**
-   ```bash
    node microservices/cart-ms.js
-   ```
-   
-   **Terminal 4 - Orders Service:**
-   ```bash
    node microservices/orders-ms.js
    ```
+
+   **Option C — VS Code (run all at once):**
+
+   Open the **Run and Debug** panel (`Cmd+Shift+D` / `Ctrl+Shift+D`), select **All Microservices** from the dropdown, and press the green play button. This launches all four services together using the compound config in [`.vscode/launch.json`](.vscode/launch.json) and loads `backend/.env` automatically. Individual services (`Users MS`, `Books MS`, `Cart MS`, `Orders MS`) are also available in the same dropdown.
 
 ### Step 3: Set up the Frontend
 
@@ -108,9 +111,12 @@ Before you begin, make sure you have the following prerequisites installed on yo
    cp sample.env .env
    ```
    
-   Update the `.env` file with your configuration:
+   Update the `.env` file with your configuration. The frontend talks to each microservice directly, so set one URL per service (matching the ports configured for the backend):
    ```
-   REACT_APP_API_URL=http://localhost:4000
+   REACT_APP_USER_MS_URL=http://localhost:4000
+   REACT_APP_ORDER_MS_URL=http://localhost:4001
+   REACT_APP_CART_MS_URL=http://localhost:4002
+   REACT_APP_BOOK_MS_URL=http://localhost:4003
    REACT_APP_GOOGLE_CLIENT_ID=<your_google_client_id>
    ```
 

@@ -167,42 +167,37 @@ class UserController {
    * @returns
    */
   static async registerGoogleUser(req, res) {
+    const signToken = (u) => jwt.sign(
+      { name: u.name, email: u.email, username: u.username, _id: u._id, role: u.role },
+      process.env.SECRET_KEY,
+      { expiresIn: '2h' }
+    );
+
     try {
-      // Check if the user already exists or not
-      const user = await UserService.findUserByEmail(req.body.email);
-      
-      // If user exists the return a message
-      if (user) {
+      let user = await UserService.findUserByEmail(req.body.email);
+
+      if (!user) {
+        // First-time Google sign-in: create the account.
+        // The password field is required by the schema but is unused for Google users —
+        // generate a random one server-side rather than trusting client-provided values.
+        const created = await UserService.registerUser({
+          ...req.body,
+          password: require('crypto').randomBytes(24).toString('hex'),
+          isVerified: true,
+        });
+        if (!created) {
+          return res.status(500).json({ message: "Failed to register Google user" });
+        }
+        user = created;
+      } else if (!user.isVerified) {
         user.isVerified = true;
         await user.save();
-        const token = jwt.sign(
-          {
-            name: user.name,
-            email: user.email,
-            username: user.username,
-            _id: user._id,
-            role: user.role
-          }, 
-          'secret123',
-          {
-            expiresIn: '2h'
-          }
-        );
-        return res.status(201).json({ user, token });
       }
 
-      // Else add the new user to the users collection
-      else {
-        req.body.isVerified = true;
-        const newUser = await UserService.registerUser(req.body);
-        if (!newUser) {
-          return res.status(500).json({ message: "No user added, some error" });
-        }
-
-        return res.status(201).json({ newUser });
-      }
+      return res.status(200).json({ user, token: signToken(user) });
     } catch (error) {
-      return res.status(500).json({ message: error });
+      console.error('registerGoogleUser - error', error);
+      return res.status(500).json({ message: 'Google sign-in failed' });
     }
   }
 

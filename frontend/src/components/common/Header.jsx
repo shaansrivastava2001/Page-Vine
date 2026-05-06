@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import '../../styles/style.scss';
 import CartService from '../../services/cart.service';
+import { logout as authLogout } from '../../utils/auth';
 
 import { Dropdown } from 'react-bootstrap';
 import Cookies from 'js-cookie';
@@ -33,14 +34,7 @@ const Header = forwardRef((props,ref) => {
   /**
    * Function to logout the user from current session
    */
-  const logout = ()=>{
-    // Clear cookies
-    
-    Cookies.remove('userToken');
-    Cookies.remove('token');
-    Cookies.remove('isVerified');
-    navigate('/');
-  }
+  const logout = () => authLogout();
 
   /**
    * Function to change the count of cart

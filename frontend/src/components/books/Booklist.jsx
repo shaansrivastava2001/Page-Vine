@@ -18,6 +18,7 @@ const BookList = () => {
   
   // State for books list
   const [books, setBooks] = useState();
+  const [loading, setLoading] = useState(true);
 
   // Count of books
   const [booksCount, setBooksCount] = useState();
@@ -54,10 +55,15 @@ const BookList = () => {
    * @param {Number} currLimit 
    */
   const getBooks = async () => {
-    const filters = {page,rowsPerPage,search,category};
-    const response = await BookService.getBooks(filters);
-    setBooks(response.data.books);
-    setBooksCount(response.data.booksCount);
+    setLoading(true);
+    try {
+      const filters = { page, rowsPerPage, search, category };
+      const response = await BookService.getBooks(filters);
+      setBooks(response.data.books);
+      setBooksCount(response.data.booksCount);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Set page numbers for number of buttons
@@ -79,14 +85,6 @@ const BookList = () => {
     if (page !== Math.ceil(booksCount / rowsPerPage))
       setPage(page + 1);
   };
-
-  // Function to set different backgrounds in books list and login page
-  const setBackground = () => {
-    const body = document.querySelector("body");
-    body.style.background = "#f7f7f7";
-  };
-
-  setBackground();
 
   /**
    * Function to manage search box
@@ -181,13 +179,28 @@ const BookList = () => {
               </tr>
             </thead>
             <tbody>
-              {
-                books?.length > 0 ? books?.map((book) => {
-                  return <Book book={book} key={book.title} handleCallChildFunction = {handleCallChildFunction} />;
-                }) : <tr>
-                  <td colSpan="7" className="text-center">No books found</td>
+              {loading ? (
+                <tr>
+                  <td colSpan="7" className="text-center" style={{ padding: "32px", color: "#6b7384" }}>
+                    Loading books…
+                  </td>
                 </tr>
-              }
+              ) : books?.length > 0 ? (
+                books.map((book) => (
+                  <Book book={book} key={book.title} handleCallChildFunction={handleCallChildFunction} />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="text-center" style={{ padding: "48px 16px", color: "#6b7384" }}>
+                    <div style={{ fontSize: "16px", fontWeight: 500, marginBottom: "4px", color: "#20242f" }}>
+                      No books found
+                    </div>
+                    <div style={{ fontSize: "13px" }}>
+                      Try a different search term or filter.
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

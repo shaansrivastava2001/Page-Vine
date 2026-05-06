@@ -1,10 +1,11 @@
-import { useState, React, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import "./authenticationStyle.scss";
 import { metadata } from '../../metadata/metadata';
 
 import UserService from "../../services/user.service";
+import { scheduleAutoLogout } from "../../utils/auth";
 
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,124 +14,96 @@ import jwt_decode from "jwt-decode";
 import Cookies from 'js-cookie';
 import Alert from 'react-bootstrap/Alert';
 
-/**
- * Returns Login Form Component
- * @param {Object} props
- * @returns {React.Component} login component
- */
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [disabled, setDisabled] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+
+  // Derived: avoids stale-closure bug the previous handlers had.
+  const canSubmit = email.trim().length > 0 && password.length > 0 && !submitting;
 
   useEffect(() => {
-    setBackground();
+    document.body.classList.add("auth-bg");
+    return () => document.body.classList.remove("auth-bg");
   }, []);
 
-  /**
-   * Function to handle hiding and showing password
-   */
-  const handleToggle = () => {
-    let pass = document.getElementById("password");
-    let toggleBtn = document.getElementById("toggle");
-    let currentType = pass.getAttribute("type");
+  useEffect(() => {
+    try {
+      const flash = sessionStorage.getItem("auth:flash");
+      if (flash) {
+        toast.info(flash);
+        sessionStorage.removeItem("auth:flash");
+      }
+    } catch {}
+  }, []);
 
-    if (currentType === "password") {
-      pass.setAttribute("type", "text");
-      toggleBtn.setAttribute("class", "fa-sharp fa-solid fa-eye toggle");
-    } else {
-      pass.setAttribute("type", "password");
-      toggleBtn.setAttribute("class", "fa-solid fa-eye-slash");
-    }
+  const showUnverified = () => {
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 3000);
   };
 
-  /**
-   * Function to validate the form
-   * @param {Event} e
-   */
+  const persistSession = (token, isVerified) => {
+    const payload = jwt_decode(token);
+    Cookies.set('userToken', JSON.stringify(payload), { expires: 2 / 24 });
+    Cookies.set('token', token, { expires: 2 });
+    Cookies.set('isVerified', isVerified, { expires: 2 });
+    scheduleAutoLogout();
+  };
+
   const login = async (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
 
-    // don't use not equal for if else
-    if (email && password) {
-      setDisabled(false);
-      loginUser(email, password);
+    setSubmitting(true);
+    try {
+      const res = await UserService.loginUser(email, password);
+      if (res.data.user.isVerified) {
+        persistSession(res.data.token, true);
+        navigate("/books");
+      } else {
+        showUnverified();
+      }
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Login failed. Please try again.";
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleClick = () => {
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000); // Change the duration (in milliseconds) as needed
-  };
-
-  /**
-   * Function to send request to backend for logging user into the app
-   * @param {String} username
-   * @param {String} password
-   */
-  const loginUser = async (email, password) => {
+  const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      setDisabled(false);
-      let res = await UserService.loginUser(email, password);
-      
-      // Decode the token provided from backend
-      const token = jwt_decode(res.data.token);
+      const decoded = jwt_decode(credentialResponse.credential);
+      const res = await UserService.postGoogleUser({
+        email: decoded.email,
+        username: decoded.given_name,
+        name: decoded.name,
+        role: "User",
+      });
 
-      if(res.data.user.isVerified){
-      // Set the decoded details from token into the cookies which expires in 2 hours
-      Cookies.set('userToken', JSON.stringify(token), { expires: 2 });
-
-      // Set the token into cookies to send it to backend for verifying it at backend
-      Cookies.set('token', res.data.token, { expires: 2 });
-
-      // The user is verified
-      Cookies.set('isVerified', true, { expires: 2 })
-      
-      navigate("/books");
-      } else {
-        handleClick();
+      if (!res?.data?.token) {
+        toast.error("Google sign-in failed");
+        return;
       }
 
-
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.message);
+      persistSession(res.data.token, res.data.user.isVerified);
+      navigate("/books");
+    } catch (err) {
+      console.error(err);
+      const msg = err?.response?.data?.message || "Google sign-in failed";
+      toast.error(msg);
     }
   };
-
-  const checkEmail = (e) => {
-    setEmail(e.target.value);
-    if (!email || !password) {
-      setDisabled(true);
-    } else {
-      setDisabled(false);
-    }
-  };
-
-  const checkPassword = (e) => {
-    setPassword(e.target.value);
-    if (!email || !password) {
-      setDisabled(true);
-    } else {
-      setDisabled(false);
-    }
-  };
-
-  const setBackground = () => {
-    let body = document.querySelector("body");
-    body.style = `background-color: rgba(195, 207, 216, 0.873);background-size:cover;background-repeat:no-repeat;`;
-  }
 
   return (
     <>
       {showAlert && (
-        <Alert variant="success" onClose={() => setShowAlert(false)} dismissible className="text-center container">
-          <strong>User is not verified</strong>
+        <Alert variant="warning" onClose={() => setShowAlert(false)} dismissible className="text-center container">
+          <strong>Your account is not verified yet.</strong> Check your email for the verification link.
         </Alert>
       )}
 
@@ -142,61 +115,58 @@ const Login = () => {
             <img src={metadata.appSvg} alt="donation image" className="mt-5 img-responsive" />
           </div>
           <div className="col-sm-6 right">
-            
             <div className="login-card">
               <h2>Login</h2>
               <h3>Enter your credentials</h3>
-              <form className="login-form" onSubmit={login} autoComplete="off">
-                <div class="form-floating mb-3">
-                  <input type="text" placeholder="Email" name="email" id="email" value={email} onChange={checkEmail} className="form-control"/>
+              <form className="login-form" onSubmit={login} autoComplete="off" noValidate>
+                <div className="form-floating mb-3">
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    name="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="form-control"
+                    autoComplete="email"
+                  />
                   <label htmlFor="email">Email</label>
                 </div>
                 <div className="input-container form-floating">
-                  <input type="password" placeholder="Password" name="password" id="password" value={password} onChange={checkPassword} className="input-field form-control"/>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    name="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="input-field form-control"
+                    autoComplete="current-password"
+                  />
                   <label htmlFor="password">Password</label>
-                  <span onClick={handleToggle}><i className="fa-solid fa-eye-slash end-button" id="toggle"></i></span>
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    onClick={() => setShowPassword((v) => !v)}
+                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setShowPassword((v) => !v)}
+                  >
+                    <i className={showPassword ? "fa-sharp fa-solid fa-eye toggle" : "fa-solid fa-eye-slash"} id="toggle"></i>
+                  </span>
                 </div>
                 <Link to={"/register"}>Don't have an account?</Link>
-                <button type="submit" id="submitBtn" disabled={disabled}>
-                  Login
+                <button type="submit" id="submitBtn" disabled={!canSubmit}>
+                  {submitting ? "Logging in…" : "Login"}
                 </button>
                 <p className="or">or</p>
                 <div className="googleLogin m-auto">
                   <GoogleLogin
-                    onSuccess={async (credentialResponse) => {
-                      let decoded = jwt_decode(credentialResponse.credential);
-                      const userObj = {
-                        email: decoded.email,
-                        username: decoded.given_name,
-                        role: "User",
-                        name: decoded.name,
-                        password: decoded.jti,
-                      };
-
-                      let res = await UserService.postGoogleUser(userObj);
-
-                      console.log(res);
-                      const token = jwt_decode(res.data.token);
-
-                      // Set the token into the cookies which expires in 2 hours
-                      Cookies.set('userToken', JSON.stringify(token), { expires: 2/24 });
-
-                      // Set the token into cookies to send it to backend for verifying it at backend
-                      Cookies.set('token', res.data.token, { expires: 2 });
-
-                      // Set is verified flag for the user
-                      Cookies.set('isVerified', res.data.user.isVerified, { expires: 2 });
-
-                      navigate("/books");
-                    }}
-                    onError={() => {
-                      console.log("Login Failed");
-                    }}
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => toast.error("Google sign-in failed")}
                   />
                 </div>
               </form>
             </div>
-
           </div>
         </div>
       </div>

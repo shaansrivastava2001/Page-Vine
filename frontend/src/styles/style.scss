@@ -1,915 +1,991 @@
 @import "./variables";
 
-.navbar {
-  background-color: $nav-bg-color;
-  color: $white;
-  padding: 0;
+// =============================================================================
+// Base & typography
+// =============================================================================
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: $font-sans;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  color: $color-text;
+  background: $color-bg;
+  padding-bottom: 56px; // leave room for the fixed footer
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.navbar-brand,
-.nav-link {
-  color: $white;
-  font-weight: 500;
-  padding: 14px;
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 $space-3;
+  color: $color-text;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
 }
 
-.navbar-brand:hover {
-  color: $white;
+h1 { font-size: $font-size-3xl; }
+h2 { font-size: $font-size-2xl; }
+h3 { font-size: $font-size-xl; }
+h4 { font-size: $font-size-lg; }
+h5 { font-size: $font-size-base; }
+
+p { margin: 0 0 $space-3; color: $color-text-muted; }
+
+a {
+  color: $color-primary;
+  text-decoration: none;
+  transition: color $transition-fast;
+  &:hover { color: $color-primary-hover; }
 }
 
-.nav-link:hover {
-  color: $white;
-  background-color: $heading-color;
-}
-
-.nav-link:focus,
-.navbar-brand:focus {
-  color: $white;
-}
-
-.navDropdown {
-  background-color: transparent;
-  border: transparent;
+:focus-visible {
   outline: none;
+  box-shadow: $shadow-focus;
+  border-radius: $radius-sm;
 }
 
-.navDropdown:hover {
-  background-color: transparent;
-  color: #6854c2;
+// =============================================================================
+// Layout
+// =============================================================================
+.container,
+.container-fluid {
+  padding-top: $space-6;
+  padding-bottom: $space-6;
 }
 
-.navDropdown:visited {
-  background-color: transparent;
+.heading {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text;
+  margin: 0;
 }
 
-.navDropdown:focus {
-  background-color: transparent;
+// =============================================================================
+// Navbar
+// =============================================================================
+.navbar {
+  background: linear-gradient(135deg, $brand-700 0%, $brand-600 100%);
+  padding: $space-3 $space-6;
+  box-shadow: $shadow-md;
+  border-bottom: 1px solid rgba($black, 0.08);
+  z-index: $z-sticky;
+
+  .navbar-brand {
+    color: $white;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.01em;
+    padding: $space-2 $space-3;
+    transition: opacity $transition-fast;
+    &:hover, &:focus { color: $white; opacity: 0.9; }
+  }
+
+  .nav-link {
+    color: rgba($white, 0.85);
+    font-weight: $font-weight-medium;
+    font-size: $font-size-sm;
+    padding: $space-2 $space-4;
+    border-radius: $radius-md;
+    transition: background $transition-fast, color $transition-fast;
+    &:hover, &:focus { background: rgba($white, 0.12); color: $white; }
+  }
+
+  .navbar-toggler {
+    border: 1px solid rgba($white, 0.3);
+    padding: $space-1 $space-2;
+    border-radius: $radius-sm;
+  }
 }
+
+#cartIcon {
+  position: relative;
+  background: rgba($white, 0.12);
+  border: 0;
+  color: $white;
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-pill;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $space-3;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover { background: rgba($white, 0.2); }
+
+  .cart-icon { font-size: $font-size-base; position: static; display: inline; }
+
+  .cart-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: $danger-500;
+    color: $white;
+    border-radius: $radius-pill;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+}
+
+.navDropdown,
+.navDropdown:hover,
+.navDropdown:focus,
+.navDropdown:active {
+  background: rgba($white, 0.12) !important;
+  border: 0 !important;
+  color: $white !important;
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-pill !important;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $space-4;
+  box-shadow: none !important;
+  &::after { display: none; }
+}
+.navDropdown:hover { background: rgba($white, 0.2) !important; }
 
 .dropdownMenu {
-  padding: 0;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  box-shadow: $shadow-lg;
+  padding: $space-2 0;
+  min-width: 220px;
+  margin-top: $space-2 !important;
+
+  p {
+    margin: 0;
+    padding: $space-3 $space-4;
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-sm;
+    color: $color-text;
+    border-bottom: 1px solid $color-border;
+  }
 }
 
 .dropdownItem {
-  border-bottom: 1px solid #d8dbe0;
-  color: $primary-color;
-  font-weight: 500;
+  border-bottom: 0 !important;
+  padding: $space-2 $space-4 !important;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-medium !important;
+  color: $color-text !important;
+  transition: background $transition-fast, color $transition-fast;
+
+  i { color: $color-text-muted; width: 16px; margin-right: $space-2; }
+  &:hover { background: $brand-50 !important; color: $color-primary !important; }
+  &:hover i { color: $color-primary; }
 }
 
-.dropdownMenu p {
-  padding: 15px;
-  font-weight: 800;
-  color: $primary-color;
-}
-
-.dropdownItem:hover {
-  background-color: $primary-color;
-  color: $white;
-}
-
+// =============================================================================
+// Cards (formContainer / detailsContainer / profile / stats)
+// =============================================================================
 .formContainer,
 .detailsContainer {
-  background-color: $white;
-  margin: auto;
-  box-sizing: border-box;
-  color: $paragraph-color;
-  width: 50%;
-  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  padding: $space-8;
+  margin: $space-6 auto;
+  width: 100%;
+  max-width: 720px;
+
+  h3 {
+    color: $color-text;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    border-bottom: 1px solid $color-border;
+    padding-bottom: $space-3;
+    margin-bottom: $space-5;
+  }
+
+  h5 {
+    margin-top: $space-4;
+    color: $color-text-muted;
+    font-weight: $font-weight-medium;
+    font-size: $font-size-sm;
+  }
+
+  span {
+    color: $color-text;
+    font-weight: $font-weight-medium;
+  }
+
+  label {
+    color: $color-text-muted;
+    font-weight: $font-weight-medium;
+    font-size: $font-size-sm;
+    margin-bottom: $space-2;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    color: $color-text;
+    padding: $space-3 $space-4;
+    font-size: $font-size-sm;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: $shadow-focus;
+    }
+  }
+
+  .editIcon {
+    margin-left: $space-2;
+    cursor: pointer;
+    color: $color-primary;
+    transition: color $transition-fast;
+    &:hover { color: $color-primary-hover; }
+  }
+
+  button.btn {
+    background: transparent;
+    color: $color-primary;
+    border: 1px solid $color-primary;
+    border-radius: $radius-md;
+    padding: $space-2 $space-5;
+    font-weight: $font-weight-medium;
+    width: auto;
+    min-width: 140px;
+    transition: background $transition-fast, color $transition-fast, box-shadow $transition-fast;
+
+    &:hover {
+      background: $color-primary;
+      color: $color-text-on-brand;
+      box-shadow: $shadow-sm;
+    }
+  }
 }
 
-.formContainer h3 {
-  color: $heading-color;
-  margin-bottom: 30px;
-  font-weight: 700;
+// formContainer's primary action button: solid by default
+.formContainer button.btn:not(.back-btn) {
+  background: $color-primary;
+  color: $color-text-on-brand;
+  border-color: $color-primary;
+
+  &:hover { background: $color-primary-hover; border-color: $color-primary-hover; }
+  &:disabled, &[disabled] {
+    background: $color-surface-alt;
+    color: $color-text-subtle;
+    border-color: $color-border;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 }
 
-.formContainer label {
-  font-weight: 600;
-  font-size: 1.4rem;
-  color: $content-text-color;
+select,
+.formContainer option {
+  color: $color-text;
+  font-weight: $font-weight-regular;
 }
 
-.formContainer input,
-.formContainer textarea {
-  background-color: transparent;
-  border: 1px solid #d9c6ed;
-  font-weight: 600;
-  color: $primary-color;
+.btnGroup,
+.btn-group {
+  display: flex;
+  gap: $space-3;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-.formContainer input.form-control:focus,
-.formContainer textarea.form-control:focus {
-  box-shadow: 0 0;
-  outline: 0 none;
-  background-color: transparent;
-  color: $primary-color;
-  font-weight: 600;
-}
+.back-btn {
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 0;
 
-.formContainer option,
-select {
-  color: $primary-color;
-  font-weight: 600;
-}
-
-.formContainer button.btn {
-  background-color: $primary-color;
-  color: $btn-color;
-  width: 20%;
-  display: block;
-}
-
-.formContainer button.btn:hover {
-  background-color: transparent;
-}
-
-.btnGroup{
-  display:"flex";
-  justify-content:"center";
-  align-items:"center";
-}
-
-.back-btn{
-  outline: none;
-  border: none;
-  background-color: inherit;
-}
-
-.back-btn i{
-  border-radius: 70%;
-  background-color: inherit;
-  color: $primary-color;
-  font-size: 1.2rem;
-  font-weight: bolder;
-  padding: 7px;
+  i {
+    background: $color-surface-alt;
+    color: $color-primary;
+    border-radius: $radius-pill;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-size-base;
+    transition: background $transition-fast, color $transition-fast;
+  }
+  &:hover i { background: $color-primary; color: $color-text-on-brand; }
 }
 
 .donationForm button.btn:disabled,
 .donationForm button.btn[disabled] {
-  background-color: rgb(123, 162, 174);
-  outline: none;
-  border: none;
+  background: $color-surface-alt !important;
+  color: $color-text-subtle !important;
+  border-color: $color-border !important;
   cursor: not-allowed;
 }
 
-.statusAvailable {
-  background-color: #d2ebd3;
-  padding: 7px;
-  border-radius: 10px;
-  font-weight: 700;
-  color: $status-available-color;
-}
-
+// =============================================================================
+// Status badges
+// =============================================================================
+.statusAvailable,
 .statusSold {
-  background-color: #f5d0cd;
-  padding: 7px;
-  border-radius: 10px;
-  color: $status-sold-color;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px $space-3;
+  border-radius: $radius-pill;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.statusAvailable { background: $success-100; color: darken($success-500, 12%); }
+.statusSold      { background: $danger-100;  color: darken($danger-500, 12%); }
+
+// =============================================================================
+// Booklist toolbar (search / filter / add)
+// =============================================================================
+.bookList {
+  h3 { color: $color-text; font-weight: $font-weight-semibold; }
+  label {
+    margin-right: $space-3;
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    font-weight: $font-weight-medium;
+  }
+  select {
+    padding: $space-2 $space-3;
+    background: $color-surface;
+    color: $color-text;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    cursor: pointer;
+    transition: border-color $transition-fast, box-shadow $transition-fast;
+    &:focus { outline: none; border-color: $color-primary; box-shadow: $shadow-focus; }
+  }
 }
 
-.detailsContainer h3 {
-  border-bottom: 1px solid rgb(181, 191, 185);
-  padding-bottom: 10px;
-  color: $heading-color;
-  font-weight: 700;
-}
+.btnAdd {
+  background: $color-primary;
+  color: $color-text-on-brand;
+  border: 1px solid $color-primary;
+  border-radius: $radius-md;
+  padding: $space-3 $space-5;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  transition: background $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+  box-shadow: $shadow-sm;
 
-.details {
-  margin-top: 30px;
-}
-
-.detailsContainer h5 {
-  margin-top: 20px;
-  font-weight: 600;
-  color: $content-text-color;
-}
-
-.detailsContainer span {
-  color: $heading-color;
-  font-weight: 700;
-}
-
-.detailsContainer .editIcon{
-  margin-left: 10px;
-  cursor: pointer;
-}
-
-.detailsContainer button.btn {
-  background-color: inherit;
-  border: 1px solid $primary-color;
-  color: $primary-color;
-  width: 20%;
-  font-weight: 500;
-}
-
-.detailsContainer button.btn:hover,
-.formContainer button.btn:hover {
-  background-color: $primary-color;
-  color: $btn-color;
-}
-
-.searchBar {
-  width: 60%;
-  background-color: $white;
-  box-sizing: border-box;
-  margin-bottom: 0;
-  padding: 10px;
-  border-radius: 0.375rem;
-  border: 2px solid #d6cfdb;
-  color: $primary-color;
-  font-weight: 700;
-  flex-grow: 1;
+  &:hover {
+    background: $color-primary-hover;
+    border-color: $color-primary-hover;
+    color: $color-text-on-brand;
+    box-shadow: $shadow-md;
+  }
+  &:active { transform: translateY(1px); }
+  &:disabled, &[disabled] {
+    background: $color-surface-alt;
+    color: $color-text-subtle;
+    border-color: $color-border;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 }
 
 .components {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: $space-3;
   align-items: center;
-  width: 100%;
+  margin-bottom: $space-5;
+  flex-wrap: wrap;
 }
 
-.bookList h3 {
-  color: #6854c2;
-  font-weight: bolder;
-}
+.searchBar {
+  flex: 1;
+  min-width: 240px;
+  background: $color-surface;
+  color: $color-text;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-regular;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
 
-.btnAdd {
-  right: 0;
-  width: 220px;
-  background-color: $primary-color;
-  color: $btn-color;
-  font-weight: 600;
-}
-
-.btnAdd:hover {
-  color: $primary-color;
-  background-color: #fdfdfd;
-  border: 1px solid $primary-color;
-}
-
-.bookList label {
-  margin-right: 10px;
-  margin-left: 30px;
-  font-size: 17px;
-  color: $content-text-color;
-  font-weight: 600;
-}
-
-.bookList select {
-  padding: 4px;
-  font-size: 17px;
-  background-color: $white;
-  color: $primary-color;
-  text-align: center;
-  width: 18%;
-  border-radius: 0.375rem;
-  outline: none;
-  border: 1px solid $td-row-hover;
-}
-
-.bookList select:hover,
-.bookList option:hover {
-  cursor: pointer;
+  &::placeholder { color: $color-text-subtle; }
+  &:focus { outline: none; border-color: $color-primary; box-shadow: $shadow-focus; }
 }
 
 #filterTable {
-  padding: 10px 15px;
-  margin-left: 16.2rem;
-  width: 30%;
-  border: 2px solid #d6cfdb;
-  border-radius: 0.375rem;
-  background-color: $white;
-  color: $primary-color;
-  font-weight: 600;
-  font-size: 16px;
+  background: $color-surface;
+  color: $color-text;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  padding: $space-3 $space-10 $space-3 $space-4;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color $transition-fast, box-shadow $transition-fast;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236854c2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23#{str-slice("#{$color-text-muted}", 2)}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 20px;
-  padding-right: 40px;
+  background-position: right $space-3 center;
+  background-size: 16px;
+
+  &:hover  { border-color: $color-border-strong; }
+  &:focus  { outline: none; border-color: $color-primary; box-shadow: $shadow-focus; }
+  option   { padding: $space-3; background: $color-surface; color: $color-text; }
+  option:checked { background: $brand-50; color: $color-primary; font-weight: $font-weight-semibold; }
+  option:hover   { background: $brand-50; color: $color-primary; }
+
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-track { background: $color-surface-alt; border-radius: $radius-md; }
+  &::-webkit-scrollbar-thumb { background: $color-border-strong; border-radius: $radius-md; }
+  &::-webkit-scrollbar-thumb:hover { background: $color-text-subtle; }
 }
 
-#filterTable:hover {
-  border-color: $primary-color;
-  box-shadow: 0 4px 8px rgba(104, 84, 194, 0.15);
-}
+.bookList #rowsPerPage { width: 100%; }
 
-#filterTable:focus {
-  outline: none;
-  border-color: $primary-color;
-  box-shadow: 0 0 0 3px rgba(104, 84, 194, 0.1);
-}
-
-/* Custom dropdown styling */
-#filterTable option {
-  padding: 12px 15px;
-  margin: 5px 0;
-  background-color: $white;
-  color: $primary-color;
-  font-weight: 600;
-  border: none;
-  line-height: 1.8;
-  font-size: 16px;
-}
-
-#filterTable option:checked {
-  background: linear-gradient(#e8dff5, #e8dff5);
-  background-color: #e8dff5;
-  color: $primary-color;
-  font-weight: 700;
-}
-
-#filterTable option:hover {
-  background-color: #f0ebf8;
-  color: $primary-color;
-}
-
-/* Webkit browsers (Chrome, Safari, Edge) */
-#filterTable::-webkit-scrollbar {
-  width: 8px;
-}
-
-#filterTable::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 0.375rem;
-}
-
-#filterTable::-webkit-scrollbar-thumb {
-  background: $primary-color;
-  border-radius: 4px;
-}
-
-#filterTable::-webkit-scrollbar-thumb:hover {
-  background: darken($primary-color, 10%);
-}
-
-.bookList #rowsPerPage {
-  width: 90%;
-}
-
-.buttons {
-  display: flex;
-  margin-left: 16%;
-  flex-wrap: nowrap;
-  padding: 1rem;
-}
-
-.buttons button {
-  width: 40%;
-  border-radius: 40px;
-  outline: none;
-  border: none;
-  padding: 10px;
-  color: $white;
-  font-weight: 700;
-}
-
-.buttons .btnConfirmYes {
-  background-color: rgb(21, 156, 21);
-  margin-right: 30px;
-}
-
-.modal button:hover {
-  color: $white;
-  background-color: inherit;
-  outline: 1px solid $white;
-}
-
-.buttons .btnConfirmNo {
-  background-color: red;
-}
-
-.dialogBox h3 {
-  padding: 2rem;
-}
-
-.profileContainer h3{
-  color: #6854c2;
-  font-weight: bolder;
-}
-
-.profileContainer .detailsContainer{
+// =============================================================================
+// Tables
+// =============================================================================
+table {
   width: 100%;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  margin-bottom: $space-5;
+  table-layout: fixed;
+  box-shadow: $shadow-sm;
 }
 
-.statsContainer .card{
-  border: none;
-  box-sizing: border-box;
-  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+table thead {
+  position: sticky;
+  top: 0;
+  z-index: $z-sticky;
 }
 
-.statsContainer .card-title{
-  font-weight: 700;
-  color: $primary-color;
+table thead th {
+  background: $color-surface-alt;
+  color: $color-text-muted;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-xs;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: $space-3 $space-4;
+  text-align: left;
+  border-bottom: 1px solid $color-border;
 }
 
-.statsContainer .card-text{
-  color: $content-text-color;
-  height: 4rem;
+table tbody td {
+  padding: $space-3 $space-4;
+  border-bottom: 1px solid $color-border;
+  color: $color-text;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-regular;
+  vertical-align: middle;
+  text-align: left;
+}
+
+table tbody tr {
+  transition: background $transition-fast;
+  &:last-child td { border-bottom: 0; }
+  &:hover { background: $brand-50; cursor: pointer; }
+}
+
+table div { margin: auto; }
+
+.booksTable,
+.usersTable {
+  max-height: 480px;
   overflow-y: auto;
+  overflow-x: hidden;
+  margin-bottom: $space-5;
+  border-radius: $radius-lg;
+  border: 1px solid $color-border;
+  background: $color-surface;
+  box-shadow: $shadow-sm;
+
+  table { box-shadow: none; border: 0; margin-bottom: 0; }
 }
 
-.orderActions .card-text{
-  height: 6.7rem;
-}
+.orderedBooksList .booksTable { max-height: none; }
 
-.statsContainer .btn{
-  border: 1px solid $primary-color;
-  color: $primary-color;
-  font-weight: 500;
-}
-
-.statsContainer .btn:hover{
-  background-color: $primary-color;
-  color: $white;
-}
-
-@media screen and (max-width: 1400px) {
-  .components {
-    display: flex;
-  }
-
-  .components select,
-  .btnAdd {
-    max-height: 47.2px;
-  }
-
-  .btnAdd {
-    width: 100%;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-  .components select,
-  .btnAdd {
-    width: 100%;
-  }
-}
-
-@media screen and (max-width: 992px) {
-  .components {
-    display: flex;
-  }
-
-  .components select,
-  .btnAdd {
-    max-height: 57.2px;
-    /* width: 100%; */
-  }
-
-  .btnAdd {
-    width: 100%;
-  }
-}
-
-@media screen and (max-width: 769px) {
-  .components {
-    display: flex;
-  }
-
-  .components label {
-    display: none;
-  }
-
-  .components select {
-    width: 30%;
-    margin-left: 10px;
-    margin-right: 0;
-    max-height: 47.2px;
-  }
-
-  .components .btnAdd {
-    height: 49.2px;
-    width: 70%;
-    padding: 7px;
-    padding-top: 1px;
-  }
-
-  .formContainer,
-  .detailsContainer{
-    width: 90%;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .components {
-    display: flex;
-  }
-
-  .formContainer,
-  .detailsContainer{
-    width: 100%;
-  }
-}
-
-footer {
-  padding: 12px 10px;
-  background-color: #000;
-  color: grey;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-}
-
-/** --------------------------CSS for Cart Page------------------------------- **/
-
-#cartIcon {
-  color: $white;
-  background-color: inherit;
-  border: none;
-  outline: none;
-  font-size: 1.4rem;
-  margin-right: 20px;
-}
-
-.btnQuantityControl {
-  font-weight: 700;
-  border: 1px transparent;
-  outline: none;
-  padding: 0px 8px 0px 8px;
-  font-size: 1.4rem;
-  color: $primary-color;
-  width: 16%;
-}
-
-.btnQuantityControl:disabled {
-  color: grey;
-}
-
-.cart-heading {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.cart-heading .right-heading span {
-  right: 0;
-  margin-right: 0;
-  padding: 10px;
-}
-
-.cartTotal {
-  color: $primary-color;
-  background-color: inherit;
-  border: 1px solid $primary-color;
-  text-align: center;
-  padding: 14px;
-  width: 40%;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  margin: auto;
-}
-
-.checkout {
-  color: $white;
-  text-align: center;
-  background-color: $primary-color;
-  padding: 10px;
-  width: 20%;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  outline: none;
-  border: none;
-}
-
-.addBooks{
-  background-color: inherit;
-  color: $primary-color;
-  border: 1px solid $primary-color;
-  display: block;
-  margin: auto;
-  padding: 10px;
-  width: 20%;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  outline: none;
-  margin-top: 2rem;
-}
-
-.addBooks:hover{
-  color: $white;
-  background-color: $primary-color;
-}
-
-.cartEmpty{
-  color: $content-text-color;
-}
-
-.booksLink{
-  color: $primary-color;
-  text-decoration: underline;
-}
-
-.cart-icon {
-  position: relative;
-  display: inline-block;
+.bookDonor {
+  color: $color-primary;
   cursor: pointer;
+  &:hover { text-decoration: underline; color: $color-primary-hover; }
 }
 
-.cart-count {
-  position: absolute;
-  min-width: 16px;
-  padding: 1px 2px;
-  font-size: 12px;
-  font-weight: bold;
-  color: $primary-color;
-  background-color: $white;
-  border-radius: 50%;
-}
-
-.cartBottom {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.clearCart {
-  padding: 10px;
-  border: 1px solid $primary-color;
-  outline: none;
-  width: 20%;
-  background-color: inherit;
-  color: $primary-color;
-  font-weight: 500;
-  margin-right: 10px;
-}
-
-.clearCart:hover {
-  color: $white;
-  background-color: $primary-color;
-}
-
-.btn-loader{
-  border: 1px solid $primary-color;
-  color: $primary-color;
-}
-
-.checkoutConfirmBox .modalFooter button{
-  color: $primary-color;
-  background-color: inherit;
-  border: 1px solid $primary-color;
-  padding: 7px;
-  font-weight: 400;
-}
-
-.checkoutConfirmBox .modalFooter button:hover{
-  color: $primary-color;
-}
-
-.checkoutConfirmBox .modalFooter button.checkout{
-  background-color: $primary-color;
-  color: $white;
-}
-
-.checkoutConfirmBox .modalFooter button.checkout:hover{
-  color: $primary-color;
-  border: 1px solid $primary-color;
-  background-color: inherit;
-}
-
-.checkoutConfirmBox .closeButton{
-  outline: none;
-  border: transparent;
-}
-
-.checkoutConfirmBox button.delete{
-  background-color: $primary-color;
-  color: $btn-color;
-}
-
-.checkoutConfirmBox button.delete:hover{
-  background-color: $btn-color;
-  color: $primary-color;
-}
-
-/** --------------------------------------------------------------- **/
-
-.fa-google {
-  color: #0f9d58;
-}
-
-.btnAction {
-  background-color: transparent;
-  outline: none;
-  border: none;
-  color: $heading-color;
-  padding: 3px;
-}
-
-.btn:disabled, .btn[disabled]{
-  cursor: not-allowed !important;
-}
-
-.btnPaginationActive {
-  background-color: $primary-color;
-  color: $btn-color;
-}
-
-.btnPaginationInactive {
-  outline: $primary-color;
-  background-color: transparent;
-  color: $primary-color;
-}
-
-.btnPaginationActive:hover {
-  background-color: $primary-color;
-  color: $btn-color;
-}
-
-.btnPaginationInactive:hover {
-  border: 1px solid $primary-color;
-  color: $primary-color;
-}
-
-.btnPaginationControls {
-  outline: $primary-color;
-  background-color: transparent;
-  color: $primary-color;
-  border: 1px solid $primary-color;
-  padding: 8px 16px;
-  border-radius: 8px;
-}
-
-.btnPaginationControls:hover {
-  color: $btn-color;
-  background-color: $primary-color;
-  transition: 0.5s;
-}
-
+// =============================================================================
+// Pagination
+// =============================================================================
 .pagination,
 .table-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: $space-4;
+  flex-wrap: wrap;
+  margin-bottom: $space-4;
 }
 
 .pagination ul {
-  margin-bottom: 0;
   display: flex;
-  gap: 5px;
+  gap: $space-2;
   align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.right-pagination,
-.right-heading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+.pagination span {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  font-weight: $font-weight-medium;
+  margin-right: $space-3;
 }
 
 .left-pagination,
 .left-heading {
   display: flex;
   align-items: center;
-  width: 20%;
+  gap: $space-3;
 }
 
-.pagination span {
-  width: 100%;
-  padding-top: 0;
-  margin-right: 10px;
-  font-size: 17px;
-  color: $content-text-color;
-  font-weight: 600;
+.right-pagination,
+.right-heading {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
 }
 
-.left-pagination{
+.btnPaginationActive,
+.btnPaginationInactive {
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-md;
+  border: 1px solid $color-border;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
+}
+
+.btnPaginationActive {
+  background: $color-primary;
+  color: $color-text-on-brand;
+  border-color: $color-primary;
+  &:hover { background: $color-primary-hover; border-color: $color-primary-hover; color: $color-text-on-brand; }
+}
+
+.btnPaginationInactive {
+  background: $color-surface;
+  color: $color-text;
+  &:hover { background: $brand-50; color: $color-primary; border-color: $color-primary; }
+}
+
+.btnPaginationControls {
+  background: $color-surface;
+  color: $color-text;
+  border: 1px solid $color-border;
+  padding: $space-2 $space-4;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
+
+  &:hover { background: $color-primary; color: $color-text-on-brand; border-color: $color-primary; }
+  &:disabled, &[disabled] {
+    background: $color-surface-alt;
+    color: $color-text-subtle;
+    border-color: $color-border;
+    cursor: not-allowed;
+  }
+}
+
+// =============================================================================
+// Cart
+// =============================================================================
+.cart-heading {
+  display: flex;
   justify-content: space-between;
-}
-
-.statsContainer .card-title h5{
-  font-weight: 700;
-  color: $primary-color;
-}
-
-.statsContainer .card-title .left-heading{
-  width: 40%;
-}
-
-.statsContainer span.cartTotal{
-  padding: 6px;
-  cursor: pointer;
-}
-
-.statsContainer span.cartTotal:hover{
-  background-color: $primary-color;
-  color: $white;
-}
-
-/** ----------------------------Table CSS---------------------------- **/
-
-table {
-  border: 1px solid $white;
-  border-collapse: collapse;
-  margin: 0;
-  padding: 0;
+  align-items: center;
   width: 100%;
-  table-layout: fixed;
-  overflow: auto;
-  color: $content-text-color;
-  margin-bottom: 20px;
+  margin-bottom: $space-5;
 }
 
-table tr {
-  background-color: $white;
-  border: 1px solid #ddd;
-  padding: 0.35em;
-  font-weight: 600;
-}
-
-table tbody tr:hover {
-  background-color: $td-row-hover;
+.btnQuantityControl {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  outline: none;
+  padding: $space-1 $space-3;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  transition: background $transition-fast, color $transition-fast;
   cursor: pointer;
+
+  &:hover { background: $color-primary; color: $color-text-on-brand; }
+  &:disabled { background: $color-surface-alt; color: $color-text-subtle; cursor: not-allowed; }
 }
 
-table th,
-table td {
-  padding: 0.625em;
+.cartTotal {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  color: $color-text;
+  border-radius: $radius-md;
+  padding: $space-3 $space-5;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-base;
+  display: inline-block;
   text-align: center;
-  font-weight: 600;
 }
 
-table div {
-  margin: auto;
+.checkout {
+  background: $color-primary;
+  color: $color-text-on-brand;
+  padding: $space-3 $space-5;
+  border: 1px solid $color-primary;
+  border-radius: $radius-md;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-sm;
+  outline: none;
+  transition: background $transition-fast, box-shadow $transition-fast;
+
+  &:hover { background: $color-primary-hover; border-color: $color-primary-hover; box-shadow: $shadow-md; }
 }
 
-table th {
-  font-weight: 800;
-  font-size: 0.85em;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-table thead {
-  position: sticky;
-  top: 0;
-  z-index: 1;
+.cartBottom {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-3;
+  margin-top: $space-5;
 }
 
-.booksTable,
-.usersTable {
-  height: 317px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-bottom: 20px;
+.clearCart {
+  background: $color-surface;
+  color: $color-text;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-3 $space-5;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-sm;
+  transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
+
+  &:hover { background: $danger-500; color: $white; border-color: $danger-500; }
 }
 
-.orderedBooksList .booksTable{
-  height: auto;
+.addBooks {
+  display: block;
+  margin: $space-6 auto;
+  background: transparent;
+  color: $color-primary;
+  border: 1px solid $color-primary;
+  border-radius: $radius-md;
+  padding: $space-3 $space-6;
+  font-weight: $font-weight-medium;
+  outline: none;
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover { background: $color-primary; color: $color-text-on-brand; }
 }
 
-.bookDonor:hover{
+.cartEmpty {
+  color: $color-text-muted;
+  text-align: center;
+  padding: $space-12 $space-4;
+  font-size: $font-size-base;
+}
+
+.booksLink {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
   text-decoration: underline;
-  color: $primary-color;
+  &:hover { color: $color-primary-hover; }
+}
+
+.btn-loader {
+  background: $color-surface;
+  color: $color-primary;
+  border: 1px solid $color-primary;
+  border-radius: $radius-md;
+  padding: $space-3 $space-5;
+}
+
+// =============================================================================
+// Modal / dialog (used for confirm dialogs)
+// =============================================================================
+.checkoutConfirmBox {
+  .modalFooter {
+    display: flex;
+    gap: $space-3;
+    justify-content: flex-end;
+    padding-top: $space-4;
+  }
+  .modalFooter button {
+    background: transparent;
+    color: $color-primary;
+    border: 1px solid $color-primary;
+    border-radius: $radius-md;
+    padding: $space-2 $space-4;
+    font-weight: $font-weight-medium;
+    transition: background $transition-fast, color $transition-fast;
+    &:hover { background: $color-primary; color: $color-text-on-brand; }
+  }
+  .modalFooter button.checkout {
+    background: $color-primary;
+    color: $color-text-on-brand;
+    &:hover { background: $color-primary-hover; }
+  }
+  .closeButton { background: transparent; border: 0; outline: none; }
+  button.delete {
+    background: $danger-500;
+    color: $white;
+    border: 1px solid $danger-500;
+    &:hover { background: darken($danger-500, 8%); }
+  }
+}
+
+.dialogBox h3 { padding: $space-6; }
+
+.buttons {
+  display: flex;
+  gap: $space-3;
+  padding: $space-4;
+  justify-content: center;
+
+  button {
+    flex: 1;
+    max-width: 200px;
+    border-radius: $radius-md;
+    outline: none;
+    border: 0;
+    padding: $space-3 $space-5;
+    color: $white;
+    font-weight: $font-weight-semibold;
+    cursor: pointer;
+    transition: opacity $transition-fast;
+    &:hover { opacity: 0.9; }
+  }
+
+  .btnConfirmYes { background: $success-500; }
+  .btnConfirmNo  { background: $danger-500; }
+}
+
+// =============================================================================
+// Profile / stats
+// =============================================================================
+.profileContainer {
+  h3 { color: $color-text; font-weight: $font-weight-semibold; }
+  .detailsContainer { width: 100%; max-width: none; }
+}
+
+.statsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: $space-4;
+  margin-top: $space-5;
+
+  .card {
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    padding: $space-5;
+    transition: box-shadow $transition-fast, transform $transition-fast;
+
+    &:hover { box-shadow: $shadow-md; transform: translateY(-2px); }
+  }
+
+  .card-title,
+  .card-title h5 {
+    color: $color-text;
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-base;
+    margin-bottom: $space-3;
+  }
+
+  .card-title .left-heading { width: auto; }
+
+  .card-text {
+    color: $color-text-muted;
+    font-size: $font-size-sm;
+    height: auto;
+    overflow: visible;
+  }
+
+  .btn {
+    background: transparent;
+    border: 1px solid $color-primary;
+    color: $color-primary;
+    border-radius: $radius-md;
+    padding: $space-2 $space-4;
+    font-weight: $font-weight-medium;
+    font-size: $font-size-sm;
+    transition: background $transition-fast, color $transition-fast;
+    &:hover { background: $color-primary; color: $color-text-on-brand; }
+  }
+
+  span.cartTotal {
+    padding: $space-1 $space-3;
+    cursor: pointer;
+    font-size: $font-size-sm;
+    &:hover { background: $color-primary; color: $color-text-on-brand; border-color: $color-primary; }
+  }
+}
+
+.orderActions .card-text { height: auto; }
+
+// =============================================================================
+// Misc
+// =============================================================================
+.fa-google { color: $color-primary; }
+
+.btnAction {
+  background: transparent;
+  outline: none;
+  border: 0;
+  color: $color-text-muted;
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
+  transition: color $transition-fast, background $transition-fast;
+  cursor: pointer;
+  &:hover { color: $color-primary; background: $brand-50; }
+}
+
+.btn:disabled,
+.btn[disabled] { cursor: not-allowed !important; }
+
+// =============================================================================
+// Footer
+// =============================================================================
+footer {
+  padding: $space-3 $space-4;
+  background: $color-surface;
+  border-top: 1px solid $color-border;
+  color: $color-text-subtle;
+  text-align: center;
+  font-size: $font-size-xs;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: $z-sticky;
+}
+
+// =============================================================================
+// Toasts
+// =============================================================================
+.Toastify__toast {
+  border-radius: $radius-md !important;
+  box-shadow: $shadow-lg !important;
+  font-size: $font-size-sm;
+  font-family: $font-sans;
+}
+
+// =============================================================================
+// ErrorBoundary
+// =============================================================================
+.error-boundary {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-6;
+  background: $color-bg;
+
+  &__card {
+    max-width: 480px;
+    width: 100%;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-md;
+    padding: $space-8;
+    text-align: center;
+
+    h1 { font-size: $font-size-2xl; font-weight: $font-weight-semibold; color: $color-text; margin: 0 0 $space-3; }
+    p  { color: $color-text-muted; margin: 0 0 $space-6; }
+    button {
+      background: $color-primary;
+      color: $color-text-on-brand;
+      border: 0;
+      border-radius: $radius-md;
+      padding: $space-3 $space-6;
+      font-weight: $font-weight-medium;
+      cursor: pointer;
+      transition: background $transition-fast;
+      &:hover { background: $color-primary-hover; }
+      &:active { background: $color-primary-active; }
+    }
+  }
+}
+
+// =============================================================================
+// Responsive
+// =============================================================================
+@media screen and (max-width: 992px) {
+  .formContainer,
+  .detailsContainer { padding: $space-6; }
+  .statsContainer   { grid-template-columns: 1fr; }
+}
+
+@media screen and (max-width: 768px) {
+  .navbar { padding: $space-2 $space-4; }
+  .components { flex-direction: column; align-items: stretch; }
+  .components label { display: none; }
+  .components select,
+  .components .btnAdd,
+  .searchBar,
+  #filterTable { width: 100%; }
+
+  .formContainer,
+  .detailsContainer { width: 100%; padding: $space-5; margin: $space-4 auto; }
+  .table-heading,
+  .pagination { flex-direction: column; align-items: stretch; gap: $space-3; }
 }
 
 @media screen and (max-width: 600px) {
-  table {
-    border: 0;
-  }
-
-  table caption {
-    font-size: 1.3em;
-  }
-
-  table thead {
-    border: none;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    width: 1px;
-  }
-
+  table { border: 0; box-shadow: none; }
+  table caption { font-size: 1.3em; }
+  table thead { border: none; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
   table tr {
-    border-bottom: 3px solid #ddd;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
     display: block;
-    margin-bottom: 0.625em;
+    margin-bottom: $space-3;
+    padding: $space-3;
+    background: $color-surface;
   }
-
   table td {
-    border-bottom: 1px solid #ddd;
-    display: block;
-    font-size: 0.8em;
+    border: 0;
+    border-bottom: 1px solid $color-border;
+    display: flex;
+    justify-content: space-between;
+    font-size: $font-size-sm;
     text-align: right;
+    padding: $space-2 0;
   }
-
-  table td::before {
-    float: left;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-
-  table td:last-child {
-    border-bottom: 0;
-  }
+  table td::before { font-weight: $font-weight-semibold; text-transform: uppercase; color: $color-text-muted; font-size: $font-size-xs; }
+  table td:last-child { border-bottom: 0; }
 }
-/** ---------------------------------------------------- **/

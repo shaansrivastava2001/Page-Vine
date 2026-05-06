@@ -1,14 +1,16 @@
-import React from 'react'
-import { Outlet, Navigate } from 'react-router-dom'
+import React from 'react';
+import { Outlet, Navigate } from 'react-router-dom';
 
-import Cookies from 'js-cookie';
+import { isAuthenticated, getUser, clearSession } from '../utils/auth';
 
 const ProtectAdmin = () => {
-    let flag;
-    Cookies.get('userToken')?JSON.parse(Cookies.get('userToken')).role==='Admin'?flag=true:flag=false:flag=false;
-  return (
-    flag ? <Outlet/> : <Navigate to="/books"/>
-  )
-}
+  if (!isAuthenticated()) {
+    clearSession();
+    return <Navigate to="/" replace />;
+  }
+  const user = getUser();
+  if (user?.role !== "Admin") return <Navigate to="/books" replace />;
+  return <Outlet />;
+};
 
 export default ProtectAdmin;

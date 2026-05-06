@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-  "start": "nodemon microservices/users-ms.js",
-  "start:user": "nodemon microservices/users-ms.js",
-  "start:order": "nodemon microservices/orders-ms.js",
-  "start:cart": "nodemon microservices/cart-ms.js",
-  "start:book": "nodemon microservices/books-ms.js",
+    "start": "nodemon microservices/users-ms.js",
+    "start:user": "nodemon microservices/users-ms.js",
+    "start:order": "nodemon microservices/orders-ms.js",
+    "start:cart": "nodemon microservices/cart-ms.js",
+    "start:book": "nodemon microservices/books-ms.js",
     "build": "npm i",
-    "setup": "node scripts/setup.js"
+    "setup": "node scripts/setup.js",
+    "postinstall": "patch-package"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "author": "shaan",
   "license": "ISC",
@@ -36,5 +40,8 @@
     "perf_hooks": "^0.0.1",
     "twilio": "^4.11.1",
     "wbm": "^1.1.16"
+  },
+  "devDependencies": {
+    "patch-package": "^8.0.1"
   }
 }

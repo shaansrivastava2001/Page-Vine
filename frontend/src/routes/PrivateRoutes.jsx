@@ -1,19 +1,12 @@
-import React from 'react'
-import { Outlet, Navigate } from 'react-router-dom'
+import React from 'react';
+import { Outlet, Navigate } from 'react-router-dom';
 
-import Cookies from 'js-cookie';
-import "react-toastify/dist/ReactToastify.css";
+import { isAuthenticated, clearSession } from '../utils/auth';
 
 const PrivateRoutes = () => {
-    let flag;
-    if(Cookies.get('userToken')==undefined){
-      flag = false;
-    } else {
-      flag = true;
-    }
-  return (
-    flag ? <Outlet/> : <Navigate to="/" />
-  )
-}
+  if (isAuthenticated()) return <Outlet />;
+  clearSession();
+  return <Navigate to="/" replace />;
+};
 
 export default PrivateRoutes;

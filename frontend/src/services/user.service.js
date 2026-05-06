@@ -127,14 +127,7 @@ async getUser (id){
  * @param {Object} userObj
 */
 async postGoogleUser (userObj) {
-  try {
-    let res = await axios
-    .post(`${process.env.REACT_APP_USER_MS_URL}/registerGoogleUser`, userObj);
-    return res;
-  } catch (error) {
-    console.log(error);
-    toast.error("User already exists");
-  }
+  return axios.post(`${process.env.REACT_APP_USER_MS_URL}/registerGoogleUser`, userObj);
 };
 
 /**

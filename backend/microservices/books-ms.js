@@ -5,7 +5,7 @@ const DbUtil = require(path.join(__dirname, '..', 'database', 'connection'));
 
 const { createApp } = require(path.join(__dirname, '..', 'server'));
 
-const PORT = process.env.BOOKS_PORT || process.env.PORT || 4003;
+const PORT = process.env.BOOKS_PORT || 4003;
 
 DbUtil.connect();
 const app = createApp(['books']);

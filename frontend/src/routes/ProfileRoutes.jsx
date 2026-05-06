@@ -1,20 +1,12 @@
-import React from 'react'
-import { Outlet, Navigate, useParams } from 'react-router-dom'
+import React from 'react';
+import { Outlet, Navigate } from 'react-router-dom';
 
-import Cookies from 'js-cookie';
+import { isAuthenticated, clearSession } from '../utils/auth';
 
 const ProfileRoutes = () => {
-
-    // Id of the user
-    let flag;
-    if(Cookies.get('userToken')===undefined ){
-        flag = false;
-    } else {
-        flag = true;
-    }
-  return (
-    flag ? <Outlet/> : <Navigate to="/login"/>
-  )
-}
+  if (isAuthenticated()) return <Outlet />;
+  clearSession();
+  return <Navigate to="/login" replace />;
+};
 
 export default ProfileRoutes;

@@ -1,18 +1,13 @@
-import React from 'react'
-import { Outlet, Navigate } from 'react-router-dom'
+import React from 'react';
+import { Outlet, Navigate } from 'react-router-dom';
 
-import Cookies from 'js-cookie';
+import { isAuthenticated, clearSession } from '../utils/auth';
 
 const ProtectLogin = () => {
-    let flag;
-    if(Cookies.get('userToken')===undefined){
-        flag = true;
-    } else {
-        flag = false;
-    }
-  return (
-    flag ? <Outlet/> : <Navigate to="/books"/>
-  )
-}
+  if (isAuthenticated()) return <Navigate to="/books" replace />;
+  // Stale session — clean up so an expired userToken cookie doesn't stick around.
+  clearSession();
+  return <Outlet />;
+};
 
 export default ProtectLogin;
