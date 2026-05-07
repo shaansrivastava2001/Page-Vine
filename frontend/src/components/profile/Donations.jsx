@@ -7,6 +7,7 @@ import UserService from "../../services/user.service";
 
 import Donation from "./Donation";
 import Header from "../common/Header";
+import BookLoader from "../common/BookLoader";
 
 const Donations = () => {
   const [donations, setDonations] = useState();
@@ -64,7 +65,9 @@ const Donations = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan="4" className="text-center" style={{ padding: 32, color: "#6b7384" }}>Loading donations…</td>
+                  <td colSpan="4" style={{ padding: 0 }}>
+                    <BookLoader label="Loading donations…" />
+                  </td>
                 </tr>
               ) : donations.length === 0 ? (
                 <tr>

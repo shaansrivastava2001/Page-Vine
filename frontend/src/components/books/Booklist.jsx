@@ -6,6 +6,7 @@ import "../../styles/style.scss";
 import Header from "../common/Header";
 import Book from "./Book";
 import CustomSelect from "../common/CustomSelect";
+import BookLoader from "../common/BookLoader";
 
 import BookService from "../../services/book.service";
 
@@ -181,8 +182,8 @@ const BookList = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="text-center" style={{ padding: "32px", color: "#6b7384" }}>
-                    Loading books…
+                  <td colSpan="7" style={{ padding: 0 }}>
+                    <BookLoader label="Loading books…" />
                   </td>
                 </tr>
               ) : books?.length > 0 ? (

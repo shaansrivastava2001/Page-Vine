@@ -112,7 +112,7 @@ const Header = forwardRef((props, ref) => {
         <Dropdown align="end" onToggle={onCartToggle}>
           <Dropdown.Toggle id="cartIcon" aria-label="Cart" as="button">
             <i className="fa-solid fa-cart-shopping cart-icon"></i>
-            {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+            {cartCount > 0 && <span key={cartCount} className="cart-count">{cartCount}</span>}
           </Dropdown.Toggle>
 
           <Dropdown.Menu className="dropdownMenu cart-popover">

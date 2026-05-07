@@ -1668,6 +1668,115 @@ table div { margin: auto; }
 .btn[disabled] { cursor: not-allowed !important; }
 
 // =============================================================================
+// Animations — kept short and on-brand. Used app-wide.
+// =============================================================================
+
+// Cards / page sections gently rise into view on first paint.
+@keyframes fadeInUp {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+// Five "book spines" gently waving in sequence — sits on the BookLoader.
+@keyframes bookWave {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(1.45); }
+}
+
+// Empty-state icons get a soft, slow bob so the page doesn't feel dead.
+@keyframes gentleBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+
+// Cart count badge pops when the value changes.
+@keyframes badgePop {
+  0%   { transform: scale(0.6); }
+  60%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+// Subtle pulse for active states (optional — not yet auto-applied).
+@keyframes softPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.7; }
+}
+
+// Apply fade-in-up to the major content surfaces. Animation only runs ONCE on
+// mount (no `infinite`), so navigations stay snappy and don't re-animate.
+.form-card,
+.profile-card,
+.stat-card,
+.empty-state,
+.action-tile,
+.auth-card,
+.book-loader {
+  animation: fadeInUp 320ms cubic-bezier(.2,.7,.2,1) both;
+}
+
+// Stagger the stat-grid cards so they cascade in.
+.stat-grid > * { animation-delay: 0.04s; }
+.stat-grid > *:nth-child(2) { animation-delay: 0.08s; }
+.stat-grid > *:nth-child(3) { animation-delay: 0.12s; }
+.stat-grid > *:nth-child(4) { animation-delay: 0.16s; }
+.stat-grid > *:nth-child(5) { animation-delay: 0.20s; }
+
+// =============================================================================
+// BookLoader — five book spines on a shelf, gently waving.
+// =============================================================================
+.book-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-8 0;
+
+  &--inline {
+    padding: $space-3 0;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  &__shelf {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 36px;
+    padding-bottom: 2px;
+    border-bottom: 2px solid $color-border;
+  }
+
+  &__bar {
+    width: 7px;
+    height: 24px;
+    border-radius: 2px 2px 0 0;
+    transform-origin: 50% 100%;
+    animation: bookWave 1.1s infinite ease-in-out;
+    will-change: transform;
+
+    &:nth-child(1) { background: $brand-300; height: 22px; animation-delay: 0s;     }
+    &:nth-child(2) { background: $brand-500; height: 28px; animation-delay: 0.10s;  }
+    &:nth-child(3) { background: $brand-600; height: 24px; animation-delay: 0.20s;  }
+    &:nth-child(4) { background: $brand-400; height: 30px; animation-delay: 0.30s;  }
+    &:nth-child(5) { background: $brand-700; height: 26px; animation-delay: 0.40s;  }
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.01em;
+  }
+}
+
+// Empty-state icon nudges gently — picks up the eye without being noisy.
+.empty-state__icon { animation: gentleBob 2.4s ease-in-out infinite; }
+
+// Cart badge pops every time the value re-renders. CSS picks up the
+// `key`-driven re-mount we'll do in the JSX so the animation re-fires.
+.cart-count { animation: badgePop 280ms cubic-bezier(.2,1.4,.6,1) both; }
+
+// =============================================================================
 // App shell — flex column so footer pins to the bottom of the viewport on
 // short pages and falls below content on long ones.
 // =============================================================================

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import "../../styles/style.scss";
 import Header from "../common/Header";
+import BookLoader from "../common/BookLoader";
 import BookService from "../../services/book.service";
 
 const formatDate = (iso) => {
@@ -91,7 +92,9 @@ const Requests = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan="5" className="text-center" style={{ padding: 32, color: "#6b7384" }}>Loading requests…</td>
+                  <td colSpan="5" style={{ padding: 0 }}>
+                    <BookLoader label="Loading requests…" />
+                  </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>

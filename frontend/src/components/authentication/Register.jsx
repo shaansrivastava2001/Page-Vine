@@ -72,14 +72,33 @@ const Register = () => {
   };
 
   return (
+    <>
     <div className="auth-page">
       <aside className="auth-hero">
-        <h1 className="auth-hero__title">{metadata.appName}</h1>
-        <p className="auth-hero__tagline">{metadata.appTagline}</p>
-        <img src={metadata.appSvg} alt="" className="auth-hero__image" />
+        <div className="auth-hero__books" aria-hidden="true">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <span key={i} className="auth-hero__book" />
+          ))}
+        </div>
+        <div className="auth-hero__content">
+          <span className="auth-hero__tag">{metadata.appName}</span>
+          <h1 className="auth-hero__title">
+            Join the library. <br />
+            Pass on a book.
+          </h1>
+          <p className="auth-hero__lede">
+            Sign up free, donate the books you've finished, request the ones
+            you want next, and meet readers in your area.
+          </p>
+          <ul className="auth-hero__stats">
+            <li><strong>2 mins</strong><span>to sign up</span></li>
+            <li><strong>0 ₹</strong><span>to join</span></li>
+            <li><strong>1 click</strong><span>to donate</span></li>
+          </ul>
+        </div>
       </aside>
 
-      <div className="auth-card auth-card--wide">
+      <main className="auth-card">
         <div className="auth-card__brand">{metadata.appName}</div>
 
         <h1 className="auth-card__title">Create your account</h1>
@@ -147,9 +166,10 @@ const Register = () => {
         <p className="auth-footer">
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
-      </div>
-      <ToastContainer />
+      </main>
     </div>
+    <ToastContainer />
+    </>
   );
 };
 

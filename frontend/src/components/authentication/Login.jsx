@@ -14,6 +14,14 @@ import { GoogleLogin } from "@react-oauth/google";
 import jwt_decode from "jwt-decode";
 import Cookies from "js-cookie";
 
+const FloatingBooks = () => (
+  <div className="auth-hero__books" aria-hidden="true">
+    {Array.from({ length: 9 }).map((_, i) => (
+      <span key={i} className="auth-hero__book" />
+    ))}
+  </div>
+);
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -91,14 +99,39 @@ const Login = () => {
   };
 
   return (
+    <>
     <div className="auth-page">
       <aside className="auth-hero">
-        <h1 className="auth-hero__title">{metadata.appName}</h1>
-        <p className="auth-hero__tagline">{metadata.appTagline}</p>
-        <img src={metadata.appSvg} alt="" className="auth-hero__image" />
+        <FloatingBooks />
+        <div className="auth-hero__content">
+          <span className="auth-hero__tag">{metadata.appName}</span>
+          <h1 className="auth-hero__title">
+            Read together. <br />
+            Share together.
+          </h1>
+          <p className="auth-hero__lede">
+            A community library where neighbors donate the books they've finished
+            and borrow the ones they're looking for. Join, request, donate — and
+            keep good books moving.
+          </p>
+          <ul className="auth-hero__stats">
+            <li>
+              <strong>Free</strong>
+              <span>to join</span>
+            </li>
+            <li>
+              <strong>Curated</strong>
+              <span>by the community</span>
+            </li>
+            <li>
+              <strong>Local</strong>
+              <span>delivery</span>
+            </li>
+          </ul>
+        </div>
       </aside>
 
-      <div className="auth-card">
+      <main className="auth-card">
         <div className="auth-card__brand">{metadata.appName}</div>
 
         <h1 className="auth-card__title">Welcome back</h1>
@@ -119,9 +152,7 @@ const Login = () => {
           </div>
 
           <div className="field">
-            <div className="field__label-row">
-              <label htmlFor="password" className="field__label">Password</label>
-            </div>
+            <label htmlFor="password" className="field__label">Password</label>
             <div className="field__input-wrap">
               <input
                 id="password"
@@ -165,9 +196,10 @@ const Login = () => {
         <p className="auth-footer">
           Don't have an account? <Link to="/register">Create one</Link>
         </p>
-      </div>
-      <ToastContainer />
+      </main>
     </div>
+    <ToastContainer />
+    </>
   );
 };
 

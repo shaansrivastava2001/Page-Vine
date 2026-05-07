@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import UserService from '../../../services/user.service';
 
 import Header from '../../common/Header';
+import BookLoader from '../../common/BookLoader';
 import Order from './Order';
 
 const Orders_Dashboard = () => {
@@ -110,7 +111,9 @@ const Orders_Dashboard = () => {
             {
               orders === undefined ? (
                 <tr>
-                  <td colSpan="5" className="text-center" style={{ padding: 32, color: "#6b7384" }}>Loading orders…</td>
+                  <td colSpan="5" style={{ padding: 0 }}>
+                    <BookLoader label="Loading orders…" />
+                  </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>

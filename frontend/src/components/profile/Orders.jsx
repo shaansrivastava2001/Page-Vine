@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import "../../styles/style.scss";
 import UserService from "../../services/user.service";
 import Header from "../common/Header";
+import BookLoader from "../common/BookLoader";
 
 const formatDateTime = (iso) => {
   if (!iso) return "—";
@@ -108,7 +109,9 @@ const Orders = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan="6" className="text-center" style={{ padding: 32, color: "#6b7384" }}>Loading orders…</td>
+                  <td colSpan="6" style={{ padding: 0 }}>
+                    <BookLoader label="Loading orders…" />
+                  </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
