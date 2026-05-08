@@ -79,7 +79,7 @@ class BookService{
     const {author, description, price, quantity, sale_price, title, status } = bookDetails;
     let result;
     await axios
-      .put(`${userServiceUrl}/${id}`, {
+      .put(`${bookServiceUrl}/updateBook/${id}`, {
         author, description, price, quantity, sale_price, title, status, token: Cookies.get('token')
       })
       .then((res) => {

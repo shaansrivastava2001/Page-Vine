@@ -206,6 +206,9 @@ const Book = (props) => {
         <td onClick={() => {getDetails(props.book)}}>
           Rs. {props.book.sale_price}
         </td>
+        <td onClick={() => {getDetails(props.book)}}>
+          {props.book.quantity}
+        </td>
         <td onClick={() => {userDetails(user._id)}}>
           <OverlayTrigger
             placement="top"

@@ -174,6 +174,7 @@ const BookList = () => {
                 <th scope="col">Author</th>
                 <th scope="col">Price</th>
                 <th scope="col">Sale Price</th>
+                <th scope="col">Quantity</th>
                 <th scope="col">Donated By</th>
                 <th scope="col">Status</th>
                 <th scope="col">Action</th>
@@ -182,7 +183,7 @@ const BookList = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="7" style={{ padding: 0 }}>
+                  <td colSpan="8" style={{ padding: 0 }}>
                     <BookLoader label="Loading books…" />
                   </td>
                 </tr>
@@ -192,7 +193,7 @@ const BookList = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center" style={{ padding: "48px 16px", color: "#6b7384" }}>
+                  <td colSpan="8" className="text-center" style={{ padding: "48px 16px", color: "#6b7384" }}>
                     <div style={{ fontSize: "16px", fontWeight: 500, marginBottom: "4px", color: "#20242f" }}>
                       No books found
                     </div>
