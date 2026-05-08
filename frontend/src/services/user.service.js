@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./appAxios";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 
@@ -39,6 +39,19 @@ async getUsers(page,limit,search) {
     searchQuery: search,
     token: Cookies.get('token')
   }));
+};
+
+/**
+ * Typeahead search powering the global header search bar. Skips the global
+ * loader (it's a noisy live-search call) and returns up to `limit` matches.
+ * @param {String} query
+ * @param {Number} limit
+ */
+async searchUsers(query, limit = 8) {
+  return axios.get(`${userServiceUrl}/search`, {
+    params: { q: query, limit, token: Cookies.get('token') },
+    skipLoader: true,
+  });
 };
 
 /**

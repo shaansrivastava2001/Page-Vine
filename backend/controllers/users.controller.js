@@ -13,6 +13,22 @@ class UserController {
    * @returns {Response} status code with a message if users list is found or not
    * */
 
+  /**
+   * Typeahead search used by the global header search. Auth-required (any
+   * logged-in user can find another by name/username/email) but not admin-
+   * gated — discovery is part of the community-app experience.
+   */
+  static async searchUsers(req, res) {
+    try {
+      const q = req.query.q || "";
+      const users = await UserService.searchUsers(q, req.query.limit);
+      return res.status(200).json({ users });
+    } catch (error) {
+      console.error("searchUsers - error", error);
+      return res.status(500).json({ message: "Search failed" });
+    }
+  }
+
   static async getUsers (req,res){
     const page = Number(req.body.page) || 1;
 

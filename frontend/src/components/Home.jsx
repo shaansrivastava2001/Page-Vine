@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import "../styles/style.scss";
 import Header from "./common/Header";
+import BookCover from "./common/BookCover";
 import { getUser } from "../utils/auth";
 
 import BookService from "../services/book.service";
@@ -43,6 +44,7 @@ const formatNumber = (n) => (n == null ? null : n.toLocaleString());
 const Home = () => {
   const me = getUser();
   const isAdmin = ["Admin", "Super Admin"].includes(me?.role);
+  const navigate = useNavigate();
 
   const [stats, setStats] = useState({
     availableCount: null,
@@ -54,6 +56,7 @@ const Home = () => {
     myDonationsCount: null,
   });
   const [loading, setLoading] = useState(true);
+  const [featured, setFeatured] = useState(null);
 
   useEffect(() => {
     let alive = true;
@@ -63,9 +66,10 @@ const Home = () => {
         OrderService.getStats(),
         UserService.getStats(),
         me?._id ? UserService.getDonations(me._id) : Promise.resolve(null),
+        BookService.getBooks({ page: 1, limit: 3, search: "", category: "available" }),
       ]);
       if (!alive) return;
-      const [books, orders, users, mine] = results;
+      const [books, orders, users, mine, recent] = results;
       const mineList = mine.status === "fulfilled" ? mine.value?.data?.donations : null;
       setStats({
         availableCount:        books.status === "fulfilled" ? books.value.data.availableCount       : null,
@@ -76,10 +80,15 @@ const Home = () => {
         totalUsers:            users.status === "fulfilled" ? users.value.data.totalUsers           : null,
         myDonationsCount:      Array.isArray(mineList) ? mineList.length : (Number(mineList) || null),
       });
+      setFeatured(recent.status === "fulfilled" ? (recent.value?.data?.books || []) : []);
       setLoading(false);
     })();
     return () => { alive = false; };
   }, []);
+
+  const openBook = (book) => {
+    navigate(`/book/${book.title}`, { state: { bookId: book._id } });
+  };
 
   const today = new Date().toLocaleDateString(undefined, {
     weekday: "long", month: "short", day: "numeric",
@@ -91,12 +100,72 @@ const Home = () => {
     <>
       <Header />
       <div className="container home">
-        <div className="page-header">
-          <div className="page-header__text">
-            <h2 className="page-title">Welcome back{firstName ? `, ${firstName}` : ""}.</h2>
-            <p className="page-subtitle">{today} · A snapshot of the library at a glance.</p>
+        <section className="home-hero" aria-labelledby="home-hero-title">
+          <div className="home-hero__content">
+            <span className="home-hero__eyebrow">{today}</span>
+            <h2 id="home-hero-title" className="home-hero__title">
+              Welcome back{firstName ? `, ${firstName}` : ""}.
+            </h2>
+            <p className="home-hero__subtitle">
+              Discover a new read, share a book you've loved, or check on the community's wishlist.
+            </p>
+            <div className="home-hero__actions">
+              <Link to="/books" className="btn-primary">
+                <i className="fa-solid fa-book" style={{ marginRight: 6 }}></i>
+                Browse books
+              </Link>
+              <Link to="/addBook" className="home-hero__ghost-btn">
+                <i className="fa-solid fa-hand-holding-heart" style={{ marginRight: 6 }}></i>
+                Donate a book
+              </Link>
+            </div>
           </div>
-        </div>
+          <div className="home-hero__art" aria-hidden="true">
+            <div className="home-hero__spine home-hero__spine--a"></div>
+            <div className="home-hero__spine home-hero__spine--b"></div>
+            <div className="home-hero__spine home-hero__spine--c"></div>
+            <div className="home-hero__spine home-hero__spine--d"></div>
+            <div className="home-hero__spine home-hero__spine--e"></div>
+          </div>
+        </section>
+
+        {(featured === null || featured.length > 0) && (
+          <>
+            <div className="section-title-row">
+              <h3 className="section-title" style={{ margin: 0 }}>Recently added</h3>
+              <Link to="/books" className="section-title-row__link">
+                See all <i className="fa-solid fa-arrow-right" style={{ marginLeft: 4 }}></i>
+              </Link>
+            </div>
+            <div className="featured-strip">
+              {featured === null
+                ? Array.from({ length: 3 }).map((_, i) => (
+                    <div className="featured-card featured-card--skeleton" key={i}>
+                      <div className="featured-card__cover-skeleton" />
+                      <div className="featured-card__body">
+                        <div className="featured-card__line-skeleton" />
+                        <div className="featured-card__line-skeleton featured-card__line-skeleton--short" />
+                      </div>
+                    </div>
+                  ))
+                : featured.map((book) => (
+                    <button
+                      type="button"
+                      className="featured-card"
+                      key={book._id}
+                      onClick={() => openBook(book)}
+                    >
+                      <BookCover title={book.title} author={book.author} size="sm" />
+                      <div className="featured-card__body">
+                        <div className="featured-card__title" title={book.title}>{book.title}</div>
+                        <div className="featured-card__price">Rs. {book.sale_price ?? book.price}</div>
+                      </div>
+                    </button>
+                  ))
+              }
+            </div>
+          </>
+        )}
 
         <h3 className="section-title">Your activity</h3>
         <div className="stat-grid">

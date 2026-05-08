@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./appAxios";
 import Cookies from "js-cookie";
 
 const bookServiceUrl = `${process.env.REACT_APP_BOOK_MS_URL}/books`;

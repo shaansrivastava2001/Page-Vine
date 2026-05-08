@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import CartService from "../../services/cart.service";
+import BookCover from "../common/BookCover";
 
 import "../../styles/style.scss";
 
@@ -127,7 +128,12 @@ const CartItem = (props) => {
   return (
     <>
       <tr>
-        <td onClick={() => {getBookDetails()}}>{props.item.title}</td>
+        <td onClick={() => {getBookDetails()}}>
+          <div className="title-cell">
+            <BookCover title={props.item.title} author={props.item.author} size="xs" />
+            <span className="title-cell__text">{props.item.title}</span>
+          </div>
+        </td>
         <td onClick={() => {getBookDetails()}}>{props.item.author}</td>
         <td onClick={() => {getBookDetails()}}>Rs. {props.item.price}</td>
         <td onClick={() => {getBookDetails()}}>Rs. {props.item.sale_price}</td>

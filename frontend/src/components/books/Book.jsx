@@ -6,8 +6,6 @@ import BookService from "../../services/book.service";
 import CartService from "../../services/cart.service";
 import UserService from "../../services/user.service";
 
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import Cookies from 'js-cookie';
@@ -289,8 +287,6 @@ const Book = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      <ToastContainer autoClose="500" />
     </>
   );
 };

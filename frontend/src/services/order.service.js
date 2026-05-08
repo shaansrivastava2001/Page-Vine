@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./appAxios";
 import Cookies from "js-cookie";
 
 const orderServiceUrl = `${process.env.REACT_APP_ORDER_MS_URL}/orders`;

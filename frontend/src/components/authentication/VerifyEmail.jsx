@@ -5,8 +5,7 @@ import "./authenticationStyle.scss";
 
 import UserService from "../../services/user.service";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const VerifyEmail = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -107,7 +106,6 @@ const VerifyEmail = () => {
         }
 
       </div>
-      <ToastContainer autoClose={500} />
     </>
   );
 };

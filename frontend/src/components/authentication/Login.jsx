@@ -8,8 +8,7 @@ import { metadata } from "../../metadata/metadata";
 import UserService from "../../services/user.service";
 import { scheduleAutoLogout } from "../../utils/auth";
 
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 import jwt_decode from "jwt-decode";
 import Cookies from "js-cookie";
@@ -198,7 +197,6 @@ const Login = () => {
         </p>
       </main>
     </div>
-    <ToastContainer />
     </>
   );
 };

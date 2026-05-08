@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import '../../styles/style.scss';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 import BookService from '../../services/book.service';
 import Header from '../common/Header';
@@ -37,7 +36,6 @@ const AddBook = () => {
     form.price !== '' && Number(form.price) > 0 &&
     form.sale_price !== '' && Number(form.sale_price) > 0 &&
     form.quantity !== '' && Number(form.quantity) > 0 &&
-    form.description.trim() &&
     !submitting;
 
   const submit = async (e) => {
@@ -117,23 +115,25 @@ const AddBook = () => {
               />
             </div>
 
-            <div className="field field--full" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-              <div className="field" style={{ gap: 4 }}>
+            <div className="field-row">
+              <div className="field">
                 <label htmlFor="price" className="field__label">Price</label>
                 <input id="price" type="number" min={1} className="field__input" value={form.price} onChange={set('price')} placeholder="Original" />
               </div>
-              <div className="field" style={{ gap: 4 }}>
+              <div className="field">
                 <label htmlFor="sale_price" className="field__label">Sale price</label>
                 <input id="sale_price" type="number" min={1} className="field__input" value={form.sale_price} onChange={set('sale_price')} placeholder="Asking" />
               </div>
-              <div className="field" style={{ gap: 4 }}>
+              <div className="field">
                 <label htmlFor="quantity" className="field__label">Quantity</label>
                 <input id="quantity" type="number" min={1} className="field__input" value={form.quantity} onChange={set('quantity')} placeholder="Copies" />
               </div>
             </div>
 
             <div className="field field--full">
-              <label htmlFor="description" className="field__label">Description</label>
+              <label htmlFor="description" className="field__label">
+                Description <span className="field__optional">(optional)</span>
+              </label>
               <textarea
                 id="description"
                 className="field__input field__textarea"
@@ -155,7 +155,6 @@ const AddBook = () => {
           </div>
         </form>
       </div>
-      <ToastContainer />
     </>
   );
 };

@@ -6,6 +6,7 @@ import CartService from "../../services/cart.service";
 import BookService from "../../services/book.service";
 
 import Header from "../common/Header";
+import BookCover from "../common/BookCover";
 
 import Cookies from "js-cookie";
 
@@ -83,49 +84,54 @@ const BookDetails = () => {
           </div>
         </div>
 
-        <section className="form-card profile-card">
-          <h3 className="section-title">Details</h3>
-          <div className="profile-info">
-            <InfoRow label="Title" value={book?.title} />
-            <InfoRow label="Author" value={book?.author} />
-            <InfoRow
-              label="Status"
-              value={
-                book ? (
-                  <span className={isAvailable ? "statusAvailable" : "statusSold"}>
-                    {book.status || (book.quantity > 0 ? "available" : "sold")}
-                  </span>
-                ) : "—"
-              }
-            />
-            <InfoRow label="Price" value={book?.price != null ? `Rs. ${book.price}` : "—"} />
-            {book?.sale_price != null && (
-              <InfoRow label="Sale price" value={`Rs. ${book.sale_price}`} />
-            )}
-            {book?.quantity != null && (
-              <InfoRow label="Quantity" value={book.quantity} />
-            )}
-            <InfoRow label="Description" value={book?.description} />
+        <section className="form-card profile-card book-detail">
+          <div className="book-detail__cover">
+            <BookCover title={book?.title} author={book?.author} size="lg" />
           </div>
+          <div className="book-detail__body">
+            <h3 className="section-title">Details</h3>
+            <div className="profile-info">
+              <InfoRow label="Title" value={book?.title} />
+              <InfoRow label="Author" value={book?.author} />
+              <InfoRow
+                label="Status"
+                value={
+                  book ? (
+                    <span className={isAvailable ? "statusAvailable" : "statusSold"}>
+                      {book.status || (book.quantity > 0 ? "available" : "sold")}
+                    </span>
+                  ) : "—"
+                }
+              />
+              <InfoRow label="Price" value={book?.price != null ? `Rs. ${book.price}` : "—"} />
+              {book?.sale_price != null && (
+                <InfoRow label="Sale price" value={`Rs. ${book.sale_price}`} />
+              )}
+              {book?.quantity != null && (
+                <InfoRow label="Quantity" value={book.quantity} />
+              )}
+              <InfoRow label="Description" value={book?.description} />
+            </div>
 
-          <div className="form-actions">
-            <button type="button" className="btn-link" onClick={() => navigate(-1)}>
-              Go back
-            </button>
-            {canEdit && (
-              <button type="button" className="btn-link" onClick={() => editBook(book)}>
-                Edit details
+            <div className="form-actions">
+              <button type="button" className="btn-link" onClick={() => navigate(-1)}>
+                Go back
               </button>
-            )}
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => addToCart(book)}
-              disabled={disabled || !book}
-            >
-              <i className="fa-solid fa-cart-shopping" style={{ marginRight: 6 }}></i>
-              Add to cart
-            </button>
+              {canEdit && (
+                <button type="button" className="btn-link" onClick={() => editBook(book)}>
+                  Edit details
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => addToCart(book)}
+                disabled={disabled || !book}
+              >
+                <i className="fa-solid fa-cart-shopping" style={{ marginRight: 6 }}></i>
+                Add to cart
+              </button>
+            </div>
           </div>
         </section>
       </div>

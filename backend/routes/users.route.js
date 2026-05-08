@@ -9,6 +9,10 @@ const router = express.Router();
 // Routes for getting users
 router.post("/users/getUsers", tokenMiddleware, UsersController.getUsers);
 
+// Typeahead search for the global header — must be declared BEFORE
+// /users/:id so the path segment "search" isn't matched as an id.
+router.get("/users/search", tokenMiddleware, UsersController.searchUsers);
+
 // Dashboard stats (auth-required, no role gating — aggregate counts only)
 router.get("/users/stats", tokenMiddleware, UsersController.getStats);
 

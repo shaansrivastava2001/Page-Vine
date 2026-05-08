@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./appAxios";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 
@@ -53,7 +53,9 @@ class CartService{
   }
 
 /**
- * Post book details to cart collection
+ * Post book details to cart collection. Dispatches a `cart:changed` event on
+ * `window` after a successful add so listeners (e.g. the Header's cart-count
+ * badge) can refresh, regardless of which page the call originated from.
  * @param {Object} book
  */
   async addToCart (book)  {
@@ -71,6 +73,7 @@ class CartService{
 
       if(res){
         this.showToast();
+        window.dispatchEvent(new CustomEvent('cart:changed'));
       } else {
         this.showerrorToast();
       };

@@ -1,6 +1,5 @@
 import Cookies from "js-cookie";
 import jwt_decode from "jwt-decode";
-import axios from "axios";
 
 const COOKIE_USER = "userToken";
 const COOKIE_TOKEN = "token";
@@ -75,23 +74,3 @@ export function scheduleAutoLogout() {
   logoutTimerId = setTimeout(() => logout("expired"), safeMs);
 }
 
-// Install once at app boot. Any 401 from a microservice triggers logout.
-let interceptorInstalled = false;
-export function installAuthInterceptors() {
-  if (interceptorInstalled) return;
-  interceptorInstalled = true;
-
-  axios.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      const status = error?.response?.status;
-      // 401 from any microservice means the session is no longer valid
-      // (token expired, signature mismatch, missing header). Force logout
-      // so the UI can't keep operating against a dead session.
-      if (status === 401) {
-        logout("expired");
-      }
-      return Promise.reject(error);
-    }
-  );
-}

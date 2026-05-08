@@ -39,8 +39,41 @@ class UsersService {
   }
 
   /**
+   * Lightweight typeahead-style search used by the global header search bar.
+   * Returns up to `limit` matches across name, username, and email — only the
+   * fields the UI needs to render a result row, no password/address blob.
+   * @param {String} query
+   * @param {Number} limit
+   * @returns {Array}
+   */
+  static async searchUsers(query, limit = 8) {
+    try {
+      const q = String(query || "").trim();
+      if (!q) return [];
+      // Escape regex metacharacters so a user typing "a." or "(test)" doesn't
+      // get a bad-regex error or unintended pattern matches.
+      const safe = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const re = new RegExp(safe, "i");
+      const users = await UserModel.find({
+        $or: [
+          { name: re },
+          { username: re },
+          { email: re },
+        ],
+      })
+        .select("_id name username email role")
+        .limit(Math.min(Number(limit) || 8, 20));
+      console.log(`UsersService.searchUsers - q='${q}' count=${users.length}`);
+      return users;
+    } catch (error) {
+      console.error(`UsersService.searchUsers - error q='${query}'`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Number of users according to the filter
-   * @param {String} searchQuery 
+   * @param {String} searchQuery
    * @returns {Integer} count of users
    */
   static async countUsers(searchQuery) {

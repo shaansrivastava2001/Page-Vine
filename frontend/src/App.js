@@ -1,7 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import Footer from "./components/common/Footer";
+import GlobalLoader from "./components/common/GlobalLoader";
+import AppBackdrop from "./components/common/AppBackdrop";
 import Home from "./components/Home";
 import BookList from "./components/books/Booklist";
 import AddBook from "./components/books/Addbook";
@@ -33,6 +37,9 @@ function App() {
   return (
     <BrowserRouter>
       <ErrorBoundary>
+      <AppBackdrop />
+      <GlobalLoader />
+      <ToastContainer autoClose={800} newestOnTop />
       <div className="app-shell">
       <main className="app-main">
       <Routes>

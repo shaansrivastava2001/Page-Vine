@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 import "../../styles/style.scss";
 
@@ -526,7 +525,6 @@ const Cart = () => {
           </Modal.Footer>
         </Modal>
       )}
-      <ToastContainer />
     </>
   );
 };

@@ -7,8 +7,7 @@ import { metadata } from "../../metadata/metadata";
 
 import UserService from "../../services/user.service";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
@@ -168,7 +167,6 @@ const Register = () => {
         </p>
       </main>
     </div>
-    <ToastContainer />
     </>
   );
 };

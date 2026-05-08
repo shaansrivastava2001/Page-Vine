@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../../styles/style.scss";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 import BookService from "../../services/book.service";
 import Header from "../common/Header";
@@ -88,7 +87,6 @@ const RequestBook = () => {
           </div>
         </form>
       </div>
-      <ToastContainer />
     </>
   );
 };
